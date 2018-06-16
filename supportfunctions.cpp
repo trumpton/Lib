@@ -36,48 +36,34 @@ void addLog(QString entry)
     supportFunctionLog = supportFunctionLog + times + entry.trimmed() + "\n" ;
 }
 
-// Used by EasyNotepad
-QString& parseBackupDate(QString backupdate)
-{
-    static QString parsedBackupDate ;
-    parsedBackupDate = backupdate ;
-    if (backupdate.length()==8) {
-        int d, m, y ;
-        y = backupdate.left(4).toInt() ;
-        m = backupdate.mid(4,2).toInt() ;
-        d = backupdate.right(2).toInt() ;
-        QDate date ;
-        date.setDate(y, m, d) ;
-        if (date.isValid()) parsedBackupDate = date.toString("dd MMM yyyy") ;
-    }
-    return parsedBackupDate ;
-}
-
 //
 // File Processing
 //
-bool parseDirectory(QString& directory, QStringList& into, QString extension, bool reversesort)
+bool parseDirectory(QString& directory, QStringList& into, QString extension, bool reversesort, bool clear)
 {
-    into.clear() ;
+    if (clear) into.clear() ;
     if (extension.isEmpty()) {
         QDir dir(directory) ;
         dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot) ;
-        into = dir.entryList() ;
+        into = into + dir.entryList() ;
     } else {
         QDir dir(directory) ;
+        extension = extension.replace(".", "") ;
         QString ext = QString("*.") + extension ;
         QStringList exts(ext) ;
         dir.setFilter(QDir::Files) ;
         if (reversesort) dir.setSorting(QDir::Name|QDir::Reversed) ;
         else dir.setSorting(QDir::Name) ;
         dir.setNameFilters(exts) ;
-        into = dir.entryList() ;
+        into = into + dir.entryList() ;
+/* Remove Extensions
         QString regexpstr = "\\." + extension + "$" ;
         for (int i=0, sz=into.size(); i<sz; i++) {
             QString filename = into[i] ;
             filename.replace(QRegExp(regexpstr), "") ;
             into[i] = filename ;
         }
+*/
     }
     return true ;
 }

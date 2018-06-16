@@ -22,7 +22,6 @@ QString& xsDateToDate(QString xsDate) ;
 QString& dateToXsDate(QString date) ;
 QDateTime& xsDateToDateTime(QString xsDate) ;
 QString& dateTimeToXsDate(QDateTime datetime) ;
-QString& parseBackupDate(QString backupdate) ;
 
 // Parse a free-text duration into minutes
 int durationstringToInt(QString str) ;
@@ -39,7 +38,7 @@ bool readFromFile(QString filename, QString &buffer, QString codec=QString("UTF-
 bool copyFile(QString from, QString to) ;
 bool fileExists(QString filename) ;
 bool directoryExists(QString directory) ;
-bool parseDirectory(QString& directory, QStringList& into, QString extension, bool reversesort=false) ;
+bool parseDirectory(QString& directory, QStringList& into, QString extension, bool reversesort=false, bool clear=true) ;
 bool deleteDirectoryAndFiles(QString directory, QString fileextension) ;
 
 // Save a copy of the file in the deleted subdirectory of path
