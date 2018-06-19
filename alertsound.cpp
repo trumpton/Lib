@@ -22,21 +22,19 @@ static int sound_initialised = 0 ;
 
 void initSound()
 {
-    QString path = QApplication::applicationDirPath() + QDir::toNativeSeparators("/") + QString("sounds") + QDir::toNativeSeparators("/") ;
+    sound_ok = new QSound(":/sounds/ok.wav") ;
+    sound_alert = new QSound(":/sounds/alert.wav") ;
+    sound_query = new QSound(":/sounds/query.wav") ;
+    sound_error = new QSound(":/sounds/error.wav") ;
 
-    sound_ok = new QSound(path + "ok.wav") ;
-    sound_alert = new QSound(path + "alert.wav") ;
-    sound_query = new QSound(path + "query.wav") ;
-    sound_error = new QSound(path + "error.wav") ;
+    sound_disabled = new QSound(":/sounds/disabled.wav") ;
 
-    sound_disabled = new QSound(path + "disabled.wav") ;
+    sound_found = new QSound(":/sounds/found.wav") ;
+    sound_notfound = new QSound(":/sounds/notfound.wav") ;
+    sound_wrapped = new QSound(":/sounds/wrapped.wav") ;
 
-    sound_found = new QSound(path + "found.wav") ;
-    sound_notfound = new QSound(path + "notfound.wav") ;
-    sound_wrapped = new QSound(path + "wrapped.wav") ;
-
-    sound_fileopen = new QSound(path + "fileopen.wav") ;
-    sound_filesave = new QSound(path + "filesave.wav") ;
+    sound_fileopen = new QSound(":/sounds/fileopen.wav") ;
+    sound_filesave = new QSound(":/sounds/filesave.wav") ;
 
     sound_initialised = 1 ;
 }

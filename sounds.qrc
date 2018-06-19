@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>sounds/alert.wav</file>
+        <file>sounds/disabled.wav</file>
+        <file>sounds/error.wav</file>
+        <file>sounds/fileopen.wav</file>
+        <file>sounds/filesave.wav</file>
+        <file>sounds/found.wav</file>
+        <file>sounds/notfound.wav</file>
+        <file>sounds/ok.wav</file>
+        <file>sounds/query.wav</file>
+        <file>sounds/wrapped.wav</file>
+    </qresource>
+</RCC>
