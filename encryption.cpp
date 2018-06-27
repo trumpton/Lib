@@ -469,7 +469,7 @@ bool Encryption::load(QString filename, QByteArray &data)
             // Generate the next buffer
             aes.encrypt(shm->plaintextkey, buf, outputbuf) ;
 
-            // Read the IV
+            // Read the Block of Data
             if (file.read((char *)buf, BLOCKSIZE)!=BLOCKSIZE) {
                 file.close() ;
                 sharedmem.unlock() ;
@@ -485,11 +485,11 @@ bool Encryption::load(QString filename, QByteArray &data)
 
         } while (pos<(len-BLOCKSIZE*3)) ;
 
-        // Extract the padding
-        long int padding = (unsigned char)data.at(pos-BLOCKSIZE) ;
+        // Extract the lastblocksize
+        long int lastblocksize = (unsigned char)data.at(pos-BLOCKSIZE) ;
 
-        // Truncate the data to remove the padding & padding count
-        data.truncate(pos+padding-BLOCKSIZE*2) ;
+        // Truncate the data to remove the padding & lastblocksize count
+        data.truncate(pos+lastblocksize-BLOCKSIZE*2) ;
 
         // Calculate the check
         aes.encrypt(shm->plaintexthash, buf, outputbuf) ;
@@ -583,9 +583,11 @@ bool Encryption::save(QString filename, QByteArray data)
 
             } else {
 
-                // Last Data Block is Flags (amount of padding)
+                // Last Data Block is Flags (size of data in last block)
                 aes.encrypt(shm->plaintextkey, buf, outputbuf) ;
-                buf[0]=(unsigned char)(len%BLOCKSIZE) ^ outputbuf[0] ;
+                int lastblocklen = (len%BLOCKSIZE) ;
+                if (lastblocklen==0) lastblocklen=16 ;
+                buf[0]=(unsigned char)lastblocklen ^ outputbuf[0] ;
                 for (unsigned int i=1; i<sizeof(buf); i++) {
                     buf[i]=random()&0xFF ^ outputbuf[i];
                 }
