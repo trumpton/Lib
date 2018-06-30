@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>610</width>
-    <height>180</height>
+    <height>212</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,6 +31,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit0">
+       <property name="maxLength">
+        <number>256</number>
+       </property>
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
        </property>
@@ -58,6 +61,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit1">
+       <property name="maxLength">
+        <number>256</number>
+       </property>
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
        </property>
@@ -85,6 +91,9 @@
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit2">
+       <property name="maxLength">
+        <number>64</number>
+       </property>
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
        </property>
@@ -121,11 +130,41 @@
      </item>
      <item>
       <widget class="QLineEdit" name="lineEdit3">
+       <property name="maxLength">
+        <number>64</number>
+       </property>
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
        </property>
        <property name="placeholderText">
         <string>********</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string>Remember</string>
        </property>
       </widget>
      </item>

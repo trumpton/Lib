@@ -56,7 +56,15 @@ public:
         KeyValidated
     } State ;
 
+    typedef enum {
+        Write=0,
+        Read,
+        Delete,
+        Exists
+    } PasswordAction ;
+
 private:
+    bool passwordStore(Encryption::PasswordAction action, QString& password) ;
     bool saveKey() ;
 
 public:

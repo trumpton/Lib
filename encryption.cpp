@@ -145,6 +145,7 @@ void Encryption::setKey()
 {
     QByteArray hashKey, hashPass ;
 
+    ui->checkBox->setVisible(false) ;
     ui->label0->setVisible(true) ;
     ui->lineEdit0->setVisible(true) ;
     ui->label1->setVisible(true) ;
@@ -219,29 +220,30 @@ void Encryption::setKey()
 
 void Encryption::changePassword()
 {
-    ui->label0->setVisible(true) ;
-    ui->lineEdit0->setVisible(true) ;
+    ui->checkBox->setVisible(false) ;
+    ui->label0->setVisible(false) ;
+    ui->lineEdit0->setVisible(false) ;
     ui->label1->setVisible(true) ;
     ui->lineEdit1->setVisible(true) ;
     ui->label2->setVisible(true) ;
     ui->lineEdit2->setVisible(true) ;
-    ui->label3->setVisible(false) ;
-    ui->lineEdit3->setVisible(false) ;
+    ui->label3->setVisible(true) ;
+    ui->lineEdit3->setVisible(true) ;
 
-    ui->label0->setText("Old Password") ;
-    ui->label1->setText("New Password") ;
-    ui->label2->setText("Re-enter") ;
+    ui->label1->setText("Old Password") ;
+    ui->label2->setText("New Password") ;
+    ui->label3->setText("Re-enter") ;
     ui->lineEdit0->clear() ;
     ui->lineEdit1->clear() ;
     ui->lineEdit2->clear() ;
     ui->lineEdit3->clear() ;
-    ui->lineEdit0->setFocus() ;
+    ui->lineEdit1->setFocus() ;
     this->setWindowTitle("Change Password") ;
 
     if (this->exec()==QDialog::Accepted) {
 
         // Check Password Match
-        if (ui->lineEdit2->text().compare(ui->lineEdit1->text())!=0) {
+        if (ui->lineEdit2->text().compare(ui->lineEdit3->text())!=0) {
             // Error, Mismatch
             QMessageBox::critical(this, "Change Password", "Password mismatch, update aborted", QMessageBox::Ok) ;
             return ;
@@ -257,7 +259,7 @@ void Encryption::changePassword()
             shm = (ShMem*) sharedmem.data() ;
 
             // Calculate and Check Old Password
-            QByteArray hashOldPassword = QCryptographicHash::hash(ui->lineEdit0->text().toLocal8Bit(), HASHALG);
+            QByteArray hashOldPassword = QCryptographicHash::hash(ui->lineEdit1->text().toLocal8Bit(), HASHALG);
             for (int i=0; i<HALFHASHB; i++) {
                 if ((unsigned char)hashOldPassword[i+HALFHASHB]!=shm->passwordhash[i]) {
                     sharedmem.unlock() ;
@@ -268,7 +270,7 @@ void Encryption::changePassword()
             }
 
             // Calculate New Password and Generate New Ciphertext Key
-            QByteArray hashPassword = QCryptographicHash::hash(ui->lineEdit1->text().toLocal8Bit(), HASHALG);
+            QByteArray hashPassword = QCryptographicHash::hash(ui->lineEdit2->text().toLocal8Bit(), HASHALG);
             for (int i=0; i<HALFHASHB; i++) {
                 shm->ciphertextkey[i] = shm->ciphertextkey[i] ^ hashPassword[i] ^ hashOldPassword[i] ;
                 shm->ciphertexthash[i] = shm->ciphertexthash[i] ^ hashPassword[i] ^ hashOldPassword[i] ;
@@ -279,6 +281,10 @@ void Encryption::changePassword()
             shm->ciphertextkeypresent = true ;
             shm->dirty=true ;
             sharedmem.unlock() ;
+
+            // Delete stored password
+            QString nullpassword ;
+            passwordStore(Encryption::Delete, nullpassword) ;
 
             if (!saveKey()) {
                 // Error saving Key
@@ -295,28 +301,35 @@ void Encryption::login()
 {
     QString password ;
 
-    ui->label0->setVisible(true) ;
-    ui->lineEdit0->setVisible(true) ;
-    ui->label1->setVisible(false) ;
-    ui->lineEdit1->setVisible(false) ;
-    ui->label2->setVisible(false) ;
-    ui->lineEdit2->setVisible(false) ;
-    ui->label3->setVisible(false) ;
-    ui->lineEdit3->setVisible(false) ;
+   if (!passwordStore(Read, password)) {
 
-    ui->label0->setText("Password") ;
-    ui->lineEdit0->clear() ;
-    ui->lineEdit1->clear() ;
-    ui->lineEdit2->clear() ;
-    ui->lineEdit3->clear() ;
-    ui->lineEdit0->setFocus() ;
-    this->setWindowTitle("Login") ;
+        ui->checkBox->setVisible(true) ;
+        ui->checkBox->setChecked(false) ;
+        ui->label0->setVisible(false) ;
+        ui->lineEdit0->setVisible(false) ;
+        ui->label1->setVisible(false) ;
+        ui->lineEdit1->setVisible(false) ;
+        ui->label2->setVisible(true) ;
+        ui->lineEdit2->setVisible(true) ;
+        ui->label3->setVisible(false) ;
+        ui->lineEdit3->setVisible(false) ;
 
-    if (!this->exec()==QDialog::Accepted) {
-        return ;
+        ui->label2->setText("Password") ;
+        ui->lineEdit0->clear() ;
+        ui->lineEdit1->clear() ;
+        ui->lineEdit2->clear() ;
+        ui->lineEdit3->clear() ;
+        ui->lineEdit2->setFocus() ;
+        this->setWindowTitle("Login") ;
+
+        if (!this->exec()==QDialog::Accepted) {
+            return ;
+        }
+
+        password = ui->lineEdit2->text() ;
+
     }
 
-    password = ui->lineEdit0->text() ;
 
     if (!sharedmem.lock()) {
         // Error Locking Memory
@@ -332,6 +345,9 @@ void Encryption::login()
             sharedmem.unlock() ;
             // No Ciphertext Key Present
             QMessageBox::critical(this, "Login", "No Key is present, login aborted", QMessageBox::Ok) ;
+
+            //TODO: delete stored password
+
             return ;
 
         } else {
@@ -344,6 +360,8 @@ void Encryption::login()
                     // Error, unable to login
                     shm->plaintextkeypresent=false ;
                     sharedmem.unlock() ;
+                    // Delete stored password
+                    passwordStore(Encryption::Delete, password) ;
                     return ;
                 }
             }
@@ -357,10 +375,57 @@ void Encryption::login()
             shm->plaintextkeypresent=true ;
             sharedmem.unlock() ;
 
+            if (ui->checkBox->isChecked()) {
+                // Store password
+                passwordStore(Encryption::Write, password) ;
+            } else {
+                // Delete stored password
+                passwordStore(Encryption::Delete, password) ;
+            }
+
         }
     }
 }
 
+
+bool Encryption::passwordStore(Encryption::PasswordAction action, QString& password)
+{
+    QSettings ini(sDomain, sApplication) ;
+
+    QByteArray ba ;
+
+    switch (action) {
+    case Encryption::Write: {
+            QByteArray ba = password.toUtf8() ;
+            QByteArray bo ;
+            for (int i=0, j=5; i<ba.length() && i<64; j+=5,i++) {
+                int nc = ((ba.at(i) ^ j)&255) + (i+1) * 3 ;
+                if (nc>255) nc-= 256 ;
+                bo.append((unsigned char)nc) ;
+            }
+            ini.setValue(QString("D"), bo) ;
+            return true ;
+        }
+        break ;
+    case Encryption::Read: {
+            QByteArray ba = ini.value(QString("D"), QByteArray()).toByteArray() ; ;
+            QByteArray bo ;
+            for (int i=0, j=5; i<ba.length() && i<64; j+=5,i++) {
+                int nc = (ba.at(i) - (i+1)*3) ;
+                if (nc<0) nc+=256 ;
+                nc = (nc ^ j)&255 ;
+                bo.append((unsigned char)nc) ;
+            }
+            password = QString::fromUtf8(bo) ;
+            return !password.isEmpty() ;
+        }
+        break ;
+    case Encryption::Delete:
+        ini.setValue(QString("D"), QByteArray()) ;
+        return true ;
+        break ;
+    }
+}
 
 
 void Encryption::logout()
@@ -381,6 +446,10 @@ void Encryption::logout()
         for (int i=0; i<sizeof(shm->plaintexthash); i++) shm->plaintexthash[i]='\0' ;
 
         sharedmem.unlock() ;
+
+        // Delete stored password
+        QString nullpassword ;
+        passwordStore(Encryption::Delete, nullpassword) ;
 
     }
 
