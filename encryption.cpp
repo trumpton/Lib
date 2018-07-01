@@ -300,6 +300,7 @@ void Encryption::changePassword()
 void Encryption::login()
 {
     QString password ;
+    bool passwordentered=false ;
 
    if (!passwordStore(Read, password)) {
 
@@ -327,7 +328,7 @@ void Encryption::login()
         }
 
         password = ui->lineEdit2->text() ;
-
+        passwordentered=true ;
     }
 
 
@@ -375,14 +376,15 @@ void Encryption::login()
             shm->plaintextkeypresent=true ;
             sharedmem.unlock() ;
 
-            if (ui->checkBox->isChecked()) {
-                // Store password
-                passwordStore(Encryption::Write, password) ;
-            } else {
-                // Delete stored password
-                passwordStore(Encryption::Delete, password) ;
+            if (passwordentered) {
+                if (ui->checkBox->isChecked()) {
+                    // Store password
+                    passwordStore(Encryption::Write, password) ;
+                } else {
+                    // Delete stored password
+                    passwordStore(Encryption::Delete, password) ;
+                }
             }
-
         }
     }
 }
