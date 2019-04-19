@@ -28,7 +28,7 @@ typedef struct {
     bool ciphertextkeypresent ;
     unsigned char ciphertextkey[HALFHASHB] ;   // CiphertextKey[0..255]
     unsigned char ciphertexthash[HALFHASHB] ;  // CiphertextKey[256..512]
-    unsigned char passwordhash[HALFHASHB] ;    // Password[HALFHASHB..512]
+    unsigned char passwordhash[HALFHASHB] ;    // Password[256..512]
 } ShMem ;
 
 
@@ -696,4 +696,63 @@ bool Encryption::save(QString filename, QByteArray data)
     }
 
     return true ;
+}
+
+
+//
+// Debug Functions
+//
+
+QString Encryption::getKeyValue(QString type)
+{
+    QByteArray response ;
+    if (sharedmem.lock()) {
+        ShMem *shm ;
+        shm = (ShMem*) sharedmem.data() ;
+
+        if (type.compare("A")==0) {
+            response.setRawData((char *)shm->ciphertextkey, HALFHASHB) ;
+        } else if (type.compare("B")==0) {
+            response.setRawData((char *)shm->ciphertexthash, HALFHASHB) ;
+        } else if (type.compare("C")==0) {
+            response.setRawData((char *)shm->passwordhash, HALFHASHB) ;
+        } else if (type.compare("D")==0) {
+            QString password ;
+            if (passwordStore(Encryption::Read, password)) {
+                response = password.toLatin1() ;
+            }
+        }
+        sharedmem.unlock() ;
+    }
+    return QString(response.toHex()) ;
+}
+
+bool Encryption::setKeyValue(QString type, QString string)
+{
+    bool status=true ;
+    QByteArray array ;
+    array = array.fromHex(string.toLatin1()) ;
+
+    if (sharedmem.lock()) {
+        ShMem *shm ;
+        shm = (ShMem*) sharedmem.data() ;
+        if (type.compare("A")==0) {
+            for (int i=0; i<HALFHASHB; i++) { shm->ciphertextkey[i] = array.at(i) ;}
+            shm->dirty=true ;
+        } else if (type.compare("B")==0) {
+            for (int i=0; i<HALFHASHB; i++) { shm->ciphertexthash[i] = array.at(i) ;}
+            shm->dirty=true ;
+        } else if (type.compare("C")==0) {
+            for (int i=0; i<HALFHASHB; i++) { shm->passwordhash[i] = array.at(i) ;}
+            shm->dirty=true ;
+        } else {
+            status=false ;
+        }
+        sharedmem.unlock() ;
+    } else {
+        status=false ;
+    }
+
+    if (status) return saveKey() ;
+    else return false ;
 }

@@ -33,7 +33,7 @@ void addLog(QString entry)
 {
     QDateTime t = QDateTime::currentDateTime() ;
     QString times=t.toString("hh:mm:ss") + ": " ;
-    supportFunctionLog = supportFunctionLog + times + entry.trimmed() + "\n" ;
+    supportFunctionLog = supportFunctionLog + times + entry + "\n" ;
 }
 
 //
@@ -359,7 +359,7 @@ QDateTime& xsDateToDateTime(QString xsDate)
     static QDateTime response ;
     response = response.fromString("00:00:00 " + xsDate, "hh:mm:ss yyyy-MM-dd") ;
     if (response.isNull()) {
-        response = response.fromString("00:00:00 0004" + xsDate, "hh:mm:ss yyyy--MM-dd") ;
+        response = response.fromString("00:00:00 0004" + xsDate, "hh:mm:ss yyyy-MM-dd") ; // was yyyy--
     }
     if (response.isNull()) {
         response = response.fromString("00:00:00 0001-01-01", "hh:mm:ss yyyy-MM-dd") ;
@@ -373,7 +373,7 @@ QString& dateTimeToXsDate(QDateTime datetime)
     if (datetime.date().year()==1) {
         response = "" ;
     } else if (datetime.date().year()==4) {
-        response = datetime.toString("--MM-dd") ;
+        response = datetime.toString("-MM-dd") ; // was --MM
     } else {
         response = datetime.toString("yyyy-MM-dd") ;
     }
@@ -533,5 +533,14 @@ void qSleep(int ms)
 #else
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
     nanosleep(&ts, NULL);
+#endif
+}
+
+
+
+void setupdebug()
+{
+#ifndef QT_NO_DEBUG_OUTPUT
+    qSetMessagePattern("%{function}:%{line} - %{message}") ;
 #endif
 }

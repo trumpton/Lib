@@ -23,7 +23,7 @@
 // Encryption *enc = new Encryption("company", "application") ;
 //
 // if (!hasKey()) { setKey() ; }
-// if (!loggedin()) { login() ; }
+// if (!loggedIn()) { login() ; }
 //
 // QString contents ;
 //
@@ -85,6 +85,9 @@ public:
     bool load(QString filename, QByteArray &data) ;
     bool save(QString filename, QByteArray data) ;
 
+    // Backup / restore key parameter "A", "B" or "C" (debug / diagnostic)
+    QString getKeyValue(QString type) ;
+    bool setKeyValue(QString type, QString string) ;
 
 
 private:

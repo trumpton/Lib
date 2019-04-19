@@ -5,6 +5,7 @@
 #include <QDateTime>
 #include <QWidget>
 #include <QLineEdit>
+#include <QDebug>
 
 QString& dateTimeStringToZulu(QString str) ;
 
@@ -60,6 +61,16 @@ bool zip(QString contactmanagerbase, QString destinationfile) ;
 
 // sleep
 void qSleep(int ms) ;
+
+// debug to console
+void setupdebug() ;
+
+#ifndef QT_NO_DEBUG_OUTPUT
+#define dbg(s) qDebug() << s ; fflush(stderr) ;
+#else
+#define dbg(s)
+#endif
+
 
 
 #endif // SUPPORTFUNCTIONS_H
