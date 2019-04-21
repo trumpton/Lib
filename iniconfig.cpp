@@ -11,15 +11,26 @@ IniConfig::IniConfig()
     path = "" ;
 }
 
+IniConfig::~IniConfig()
+{
+    if (settings) delete settings ;
+}
+
 bool IniConfig::init(QString inifile)
 {
     settings = new QSettings(inifile, QSettings::IniFormat);
-    if (numSections()!=0) {
-        path = QFileInfo(inifile).canonicalPath() ;
-        return true ;
-    } else {
+    if (!settings) {
         path="" ;
         return false ;
+    } else {
+        if (numSections()!=0) {
+            path = QFileInfo(inifile).canonicalPath() ;
+            return true ;
+        } else {
+            path="" ;
+            if (settings) delete settings ;
+            return false ;
+        }
     }
 }
 

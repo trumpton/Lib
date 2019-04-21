@@ -466,7 +466,8 @@ bool zip(QString contactmanagerbase, QString destinationfile)
             destinationfile <<
             contactmanagerbase + "/contact" <<
             contactmanagerbase + "/calendar" ;
-    QProcess *myProcess = new QProcess(NULL) ;
+    QProcess *myProcess = new QProcess(NULL) ;  
+    myProcess->deleteLater();
     myProcess->start(command, args) ;
     return true ;
 }
