@@ -1,6 +1,8 @@
 #include "warningok.h"
 #include "ui_warningok.h"
 
+#include <QStyle>
+
 WarningOk::WarningOk(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::WarningOk)

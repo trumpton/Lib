@@ -2,6 +2,7 @@
 #include "ui_warningyesno.h"
 
 #include <QPushButton>
+#include <QStyle>
 
 WarningYesNo::WarningYesNo(QWidget *parent) :
     QDialog(parent),

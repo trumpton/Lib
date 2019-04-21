@@ -13,8 +13,12 @@
 #define HALFHASHB 32
 #define BLOCKSIZE 16
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(WIN32)
+#include <time.h>
 #define random() rand()
+#define initrand() srand(time(0))
+#else
+#define initrand()
 #endif
 
 //
@@ -38,6 +42,8 @@ Encryption::Encryption(QString domain, QString application, QWidget *parent) :
 {
     sDomain = domain ;
     sApplication = application ;
+
+    initrand() ;
 
     sharedmem.setKey(sDomain + QString(".") + sApplication) ;
     if (!sharedmem.attach()) {

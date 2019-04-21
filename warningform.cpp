@@ -1,6 +1,8 @@
 #include "warningform.h"
 #include "ui_warningform.h"
 
+#include <QStyle>
+
 WarningForm::WarningForm(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::WarningForm)
