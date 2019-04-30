@@ -1,6 +1,6 @@
 #include "encryption.h"
 #include "ui_encryption.h"
-#include "../Lib/aes.h"
+#include "aes.h"
 
 #include <QCryptographicHash>
 #include <QSettings>
@@ -40,6 +40,8 @@ Encryption::Encryption(QString domain, QString application, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Encryption)
 {
+    ui->setupUi(this);
+
     sDomain = domain ;
     sApplication = application ;
 
@@ -75,7 +77,6 @@ Encryption::Encryption(QString domain, QString application, QWidget *parent) :
             }
         }
     }
-    ui->setupUi(this);
 }
 
 Encryption::~Encryption()

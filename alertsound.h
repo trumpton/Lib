@@ -6,6 +6,7 @@ enum soundType {
 };
 
 void initSound() ;
+void closeSound() ;
 void play(enum soundType type) ;
 
 #endif // ALERTSOUND_H

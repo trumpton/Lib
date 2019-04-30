@@ -60,3 +60,19 @@ void play(enum soundType type)
     }
     sound->play() ;
 }
+
+void closeSound()
+{
+    if (sound_initialised!=0) {
+        if (sound_alert) delete sound_alert ;
+        if (sound_error) delete sound_error ;
+        if (sound_query) delete sound_query ;
+        if (sound_disabled) delete sound_disabled ;
+        if (sound_found) delete sound_found ;
+        if (sound_notfound) delete sound_notfound ;
+        if (sound_wrapped) delete sound_wrapped ;
+        if (sound_fileopen) delete sound_fileopen ;
+        if (sound_filesave) delete sound_filesave ;
+        sound_initialised=0 ;
+    }
+}
