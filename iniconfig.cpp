@@ -11,6 +11,11 @@ IniConfig::IniConfig()
     path = "" ;
 }
 
+IniConfig::IniConfig(IniConfig &other)
+{
+    qFatal("FATAL: IniConfig copied or not passed to function by ref") ;
+}
+
 IniConfig::~IniConfig()
 {
     if (settings) delete settings ;

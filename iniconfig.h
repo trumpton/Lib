@@ -16,6 +16,7 @@ private:
 
 public:
     IniConfig() ;
+    IniConfig(IniConfig &other) ;
     ~IniConfig() ;
     bool init(QString inifile);
     QString& canonicalPath() ;

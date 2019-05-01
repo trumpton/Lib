@@ -79,6 +79,11 @@ Encryption::Encryption(QString domain, QString application, QWidget *parent) :
     }
 }
 
+Encryption::Encryption(Encryption& other)
+{
+    qFatal("FATAL: Encryption copied or not passed to function by ref") ;
+}
+
 Encryption::~Encryption()
 {
     sharedmem.detach() ;
@@ -354,7 +359,8 @@ void Encryption::login()
             // No Ciphertext Key Present
             QMessageBox::critical(this, "Login", "No Key is present, login aborted", QMessageBox::Ok) ;
 
-            //TODO: delete stored password
+            // Delete stored password
+            passwordStore(Encryption::Delete, password) ;
 
             return ;
 

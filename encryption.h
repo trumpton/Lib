@@ -69,6 +69,7 @@ private:
 
 public:
     explicit Encryption(QString domain, QString application, QWidget *parent = 0);
+    Encryption(Encryption& other) ;
     ~Encryption();
 
     // Dialog form functions
