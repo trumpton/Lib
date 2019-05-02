@@ -69,9 +69,15 @@ private:
 
 public:
     explicit Encryption(QString domain, QString application, QWidget *parent = 0);
-    Encryption(Encryption& other) ;
     ~Encryption();
 
+private:
+    // Unused copy construct
+    Encryption(const Encryption& other) ;
+    Encryption& operator= (const Encryption &rhs) ;
+
+
+public:
     // Dialog form functions
     void setKey() ;
     void changePassword() ;

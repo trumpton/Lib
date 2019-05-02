@@ -34,6 +34,12 @@ public:
     AES(int keylen) ;
     ~AES() ;
 
+private:
+    // Unused copy construct
+    AES(AES& other) ;
+    AES& operator= (const AES &rhs) ;
+
+public:
     void encrypt(unsigned char *key, unsigned char *in, unsigned char *out) ;
     void decrypt(unsigned char *key, unsigned char *in, unsigned char *out) ;
 

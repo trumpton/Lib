@@ -16,8 +16,13 @@ private:
 
 public:
     IniConfig() ;
-    IniConfig(IniConfig &other) ;
     ~IniConfig() ;
+
+private:
+    // Unused copy construct
+    IniConfig(const IniConfig &other) ;
+
+public:
     bool init(QString inifile);
     QString& canonicalPath() ;
     QString get(QString key) ;

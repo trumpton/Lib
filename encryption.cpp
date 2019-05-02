@@ -79,11 +79,6 @@ Encryption::Encryption(QString domain, QString application, QWidget *parent) :
     }
 }
 
-Encryption::Encryption(Encryption& other)
-{
-    qFatal("FATAL: Encryption copied or not passed to function by ref") ;
-}
-
 Encryption::~Encryption()
 {
     sharedmem.detach() ;
