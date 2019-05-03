@@ -434,6 +434,8 @@ bool Encryption::passwordStore(Encryption::PasswordAction action, QString& passw
         ini.setValue(QString("D"), QByteArray()) ;
         return true ;
         break ;
+    default:
+        return false ;
     }
 }
 
