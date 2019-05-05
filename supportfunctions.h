@@ -71,6 +71,9 @@ void setupdebug() ;
 #define dbg(s)
 #endif
 
-
+// Versions and Git Hashes
+QString buildDate() ;   // Build/compile date of application
+QString libVersion() ;  // Version of library
+QString appHash() ;     // Git hash of current application
 
 #endif // SUPPORTFUNCTIONS_H

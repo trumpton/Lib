@@ -545,3 +545,44 @@ void setupdebug()
     qSetMessagePattern("%{function}:%{line} - %{message}") ;
 #endif
 }
+
+// Return the compule date/time
+QString buildDate()
+{
+    return QString(__DATE__) + QString(" - ") + QString(__TIME__) ;
+}
+
+// TODO: Return 1 if var contains no string data
+#define EMPTY(var) false
+
+// Return the library version or GIT Hash of the Lib folder
+// Uses either LIBVERSION from version.h or LIBHASH from Lib.pro
+// depending on whether NOGIT is defined or not in Lib.pro
+QString libVersion()
+{
+#ifdef NOGIT
+    // Lib Version Date/Time of compile used, as Git not available
+    return buildDate() ;
+#else
+#if !defined(LIBHASH) || EMPTY(LIBHASH)
+    #error "LIBHASH not defined in .pro file, git not used, or call failed"
+#else
+    return QString(LIBHASH) ;
+#endif // LIBHASH
+#endif // NOGIT
+}
+
+// Return the GIT Hash for the main program
+QString appHash()
+{
+#ifdef NOGIT
+    // App Version Date/Time of compile used, as Git not available
+    return buildDate() ;
+#else
+#if !defined(GITHASH) || EMPTY(GITHASH)
+    #error "GITHASH not defined in .pro file, git not used, or call failed"
+#else
+    return QString(GITHASH) ;
+#endif // GITHASH
+#endif // NOGIT
+}
