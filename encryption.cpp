@@ -435,10 +435,7 @@ bool Encryption::passwordStore(Encryption::PasswordAction action, QString& passw
         return true ;
         break ;
     default:
-<<<<<<< HEAD
         // Error
-=======
->>>>>>> 32642280ca68c69ba741fb5d01cdf81ae6fca8ad
         return false ;
     }
 }
