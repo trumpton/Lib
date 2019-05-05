@@ -350,7 +350,7 @@ void AES::encrypt(unsigned char *key, unsigned char *in, unsigned char *out)
 	}
 
         // Overwrite expanded Key
-        for (int i=0; i<sizeof(RoundKey); i++) RoundKey[i]='\0' ;
+        for (unsigned int i=0; i<sizeof(RoundKey); i++) RoundKey[i]='\0' ;
 
 }
 
@@ -403,7 +403,7 @@ void AES::decrypt(unsigned char *key, unsigned char *in, unsigned char *out)
         }
 
         // Overwrite expanded Key
-        for (int i=0; i<sizeof(RoundKey); i++) RoundKey[i]='\0' ;
+        for (unsigned int i=0; i<sizeof(RoundKey); i++) RoundKey[i]='\0' ;
 
 }
 
