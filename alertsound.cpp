@@ -18,6 +18,8 @@ QSound *sound_wrapped ;
 QSound *sound_fileopen ;
 QSound *sound_filesave ;
 
+QSound *sound_sent ;
+
 static int sound_initialised = 0 ;
 
 void initSound()
@@ -35,6 +37,8 @@ void initSound()
 
     sound_fileopen = new QSound(":/sounds/fileopen.wav") ;
     sound_filesave = new QSound(":/sounds/filesave.wav") ;
+
+    sound_sent = new QSound(":/sounds/sent.wav") ;
 
     sound_initialised = 1 ;
 }
@@ -54,6 +58,7 @@ void play(enum soundType type)
     case Wrapped: sound = sound_wrapped ; break ;
     case FileOpen: sound = sound_fileopen ; break ;
     case FileSave: sound = sound_filesave ; break ;
+    case Sent: sound = sound_sent ; break ;
     default:
     case Ok:
         sound = sound_ok ; break ;
@@ -73,6 +78,7 @@ void closeSound()
         if (sound_wrapped) delete sound_wrapped ;
         if (sound_fileopen) delete sound_fileopen ;
         if (sound_filesave) delete sound_filesave ;
+        if (sound_sent) delete sound_sent ;
         sound_initialised=0 ;
     }
 }

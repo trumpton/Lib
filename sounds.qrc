@@ -10,5 +10,6 @@
         <file>sounds/ok.wav</file>
         <file>sounds/query.wav</file>
         <file>sounds/wrapped.wav</file>
+        <file>sounds/sent.wav</file>
     </qresource>
 </RCC>

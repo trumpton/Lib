@@ -2,7 +2,7 @@
 #define ALERTSOUND_H
 
 enum soundType {
-    Ok, Alert, Error, Query, Disabled, Found, NotFound, Wrapped, FileOpen, FileSave
+    Ok, Alert, Error, Query, Disabled, Found, NotFound, Wrapped, FileOpen, FileSave, Sent
 };
 
 void initSound() ;
