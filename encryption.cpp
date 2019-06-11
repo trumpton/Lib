@@ -330,7 +330,7 @@ void Encryption::login()
         ui->lineEdit2->setFocus() ;
         this->setWindowTitle("Login") ;
 
-        if (!this->exec()==QDialog::Accepted) {
+        if (this->exec()!=QDialog::Accepted) {
             return ;
         }
 
@@ -414,9 +414,10 @@ bool Encryption::passwordStore(Encryption::PasswordAction action, QString& passw
                 bo.append((unsigned char)nc) ;
             }
             ini.setValue(QString("D"), bo) ;
-            return true ;
         }
+        return true ;
         break ;
+
     case Encryption::Read: {
             QByteArray ba = ini.value(QString("D"), QByteArray()).toByteArray() ; ;
             QByteArray bo ;
@@ -427,16 +428,19 @@ bool Encryption::passwordStore(Encryption::PasswordAction action, QString& passw
                 bo.append((unsigned char)nc) ;
             }
             password = QString::fromUtf8(bo) ;
-            return !password.isEmpty() ;
         }
+        return !password.isEmpty() ;
         break ;
+
     case Encryption::Delete:
         ini.setValue(QString("D"), QByteArray()) ;
         return true ;
         break ;
+
     default:
         // Error
         return false ;
+        break ;
     }
 }
 
@@ -455,8 +459,8 @@ void Encryption::logout()
 
         shm->plaintextkeypresent=false ;
 
-        for (int i=0; i<sizeof(shm->plaintextkey); i++) shm->plaintextkey[i]='\0' ;
-        for (int i=0; i<sizeof(shm->plaintexthash); i++) shm->plaintexthash[i]='\0' ;
+        for (int i=0; i<(int)sizeof(shm->plaintextkey); i++) shm->plaintextkey[i]='\0' ;
+        for (int i=0; i<(int)sizeof(shm->plaintexthash); i++) shm->plaintexthash[i]='\0' ;
 
         sharedmem.unlock() ;
 
@@ -509,7 +513,7 @@ bool Encryption::load(QString filename, QByteArray &data)
 
         AES aes(256) ;
         unsigned char buf[BLOCKSIZE], outputbuf[BLOCKSIZE] ;
-        unsigned char *databuf = (unsigned char *)data.data() ;
+        //unsigned char *databuf = (unsigned char *)data.data() ;
 
         ShMem *shm ;
         shm = (ShMem*) sharedmem.data() ;
@@ -671,7 +675,7 @@ bool Encryption::save(QString filename, QByteArray data)
                 if (lastblocklen==0) lastblocklen=16 ;
                 buf[0]=(unsigned char)lastblocklen ^ outputbuf[0] ;
                 for (unsigned int i=1; i<sizeof(buf); i++) {
-                    buf[i]=random()&0xFF ^ outputbuf[i];
+                    buf[i]= (random()&0xFF) ^ (outputbuf[i]);
                 }
 
             }
