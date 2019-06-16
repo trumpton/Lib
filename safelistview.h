@@ -6,12 +6,20 @@
 class SafeListView : public QListView
 {
     Q_OBJECT
+
+private:
+    QModelIndex curridx ;
+
 public:
     explicit SafeListView(QWidget *parent = 0);
     void focusInEvent(QFocusEvent * e) ;
+    void setCurrentIndex(const QModelIndex &idx) ;
+    void scrollTo(const QModelIndex &index, QAbstractItemView::ScrollHint hint = EnsureVisible) ;
+
+
 
 signals:
-    void gainedFocus(QString str) ;
+    void gainedFocus(int row) ;
 
 public slots:
 
