@@ -549,7 +549,32 @@ void setupdebug()
 // Return the compule date/time
 QString buildDate()
 {
-    return QString(__DATE__) + QString(" - ") + QString(__TIME__) ;
+    QString date = QString(__DATE__) ;
+
+    QString day ;
+    int dayint = date.mid(4,2).toInt() ;
+    day = QString::number(dayint) ;
+    if (dayint<10) day = QString("0") + day ;
+
+
+    QString month ;
+    QString monthstr = date.mid(0,3);
+    if (monthstr.compare("Jan")==0) month="01" ;
+    else if (monthstr.compare("Feb")==0) month="02" ;
+    else if (monthstr.compare("Mar")==0) month="03" ;
+    else if (monthstr.compare("Apr")==0) month="04" ;
+    else if (monthstr.compare("May")==0) month="05" ;
+    else if (monthstr.compare("Jun")==0) month="06" ;
+    else if (monthstr.compare("Jul")==0) month="07" ;
+    else if (monthstr.compare("Aug")==0) month="08" ;
+    else if (monthstr.compare("Sep")==0) month="09" ;
+    else if (monthstr.compare("Oct")==0) month="10" ;
+    else if (monthstr.compare("Nov")==0) month="11" ;
+    else month="12" ;
+
+    QString year = date.mid(7,4) ;
+
+    return QString("%1-%2-%3 %4").arg(year).arg(month).arg(day).arg(QString(__TIME__)) ;
 }
 
 // TODO: Return 1 if var contains no string data
