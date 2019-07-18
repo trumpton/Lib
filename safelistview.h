@@ -16,10 +16,8 @@ public:
     void setCurrentIndex(const QModelIndex &idx) ;
     void scrollTo(const QModelIndex &index, QAbstractItemView::ScrollHint hint = EnsureVisible) ;
 
-
-
 signals:
-    void gainedFocus(int row) ;
+    void selectionChanged(const QModelIndex &index) ;
 
 public slots:
 

@@ -1,5 +1,6 @@
 #include "safelistview.h"
 #include "supportfunctions.h"
+#include <QStringListModel>
 
 SafeListView::SafeListView(QWidget *parent) :
     QListView(parent)
@@ -13,8 +14,9 @@ void SafeListView::setCurrentIndex(const QModelIndex &idx)
         QListView::setCurrentIndex(curridx) ;
         selectionModel()->select(curridx, QItemSelectionModel::Select);
         dbg(QString("hasfocus, curridx.row=%1").arg(curridx.row())) ;
+        emit selectionChanged(curridx);
     } else {
-        dbg("does not have focus") ;
+        dbg(QString("does not have focus, caching curridx.row=%1").arg(curridx.row())) ;
     }
 }
 
@@ -25,17 +27,15 @@ void SafeListView::focusInEvent(QFocusEvent * e)
     if (curridx.isValid()) {
         QListView::setCurrentIndex(curridx) ;
         selectionModel()->select(curridx, QItemSelectionModel::Select);
-        emit gainedFocus(curridx.row()) ;
         dbg(QString("gained focus, curridx.row=%1").arg(curridx.row())) ;
-    } else {
-        emit gainedFocus(-1) ;
-        dbg(QString("gained focus -1")) ;
+        emit selectionChanged(curridx) ;
     }
 }
 
 void SafeListView::scrollTo(const QModelIndex &index, QAbstractItemView::ScrollHint hint)
 {
     curridx = index ;
-    dbg("Changed index position") ;
+    dbg(QString("Changed Index Position, curridx.row=%1").arg(curridx.row())) ;
     QListView::scrollTo(index, hint) ;
+    emit selectionChanged(index) ;
 }
