@@ -1,8 +1,6 @@
 #include "safelistview.h"
 #include "supportfunctions.h"
 #include <QStringListModel>
-#include <QFocusEvent>
-#include <QTimer>
 
 SafeListView::SafeListView(QWidget *parent) :
     QListView(parent)
@@ -25,14 +23,13 @@ void SafeListView::setCurrentIndex(const QModelIndex &idx)
 void SafeListView::focusInEvent(QFocusEvent * e)
 {    
     QListView::focusInEvent(e) ;
-    if (curridx.isValid()) {
-        QTimer::singleShot(1, this, SLOT(refreshCurrentIndex()));
-    }
-}
 
-void SafeListView::refreshCurrentIndex()
-{
-    setCurrentIndex(curridx) ;
+    if (curridx.isValid()) {
+        QListView::setCurrentIndex(curridx) ;
+        selectionModel()->select(curridx, QItemSelectionModel::Select);
+        dbg(QString("gained focus, curridx.row=%1").arg(curridx.row())) ;
+        emit selectionChanged(curridx) ;
+    }
 }
 
 void SafeListView::scrollTo(const QModelIndex &index, QAbstractItemView::ScrollHint hint)

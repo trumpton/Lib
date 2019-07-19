@@ -20,7 +20,6 @@ signals:
     void selectionChanged(const QModelIndex &index) ;
 
 public slots:
-    void refreshCurrentIndex() ;
 
 };
 
