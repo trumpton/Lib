@@ -552,7 +552,7 @@ QString buildDate()
     QString date = QString(__DATE__) ;
 
     QString day ;
-    int dayint = date.mid(4,2).toInt() ;
+    int dayint = date.midRef(4,2).toInt() ;
     day = QString::number(dayint) ;
     if (dayint<10) day = QString("0") + day ;
 
@@ -574,7 +574,7 @@ QString buildDate()
 
     QString year = date.mid(7,4) ;
 
-    return QString("%1-%2-%3 %4").arg(year).arg(month).arg(day).arg(QString(__TIME__)) ;
+    return QString("%1-%2-%3 %4").arg(year,month,day,QString(__TIME__)) ;
 }
 
 // TODO: Return 1 if var contains no string data

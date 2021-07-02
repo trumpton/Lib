@@ -402,8 +402,6 @@ bool Encryption::passwordStore(Encryption::PasswordAction action, QString& passw
 {
     QSettings ini(sDomain, sApplication) ;
 
-    QByteArray ba ;
-
     switch (action) {
     case Encryption::Write: {
             QByteArray ba = password.toUtf8() ;
