@@ -32,7 +32,7 @@ QString& durationintToString(int mins) ;
 QString& deAccent(QString& str) ;
 
 // File Read and Write
-bool writeToFile(QString filename, QString data, bool append=false, QString codec=QString("UTF-8")) ;
+bool writeToFile(QString filename, QString data, bool append=false) ;
 bool readFromFile(QString filename, QString &buffer, QString codec=QString("UTF-8"), QString altcodec=QString("System")) ;
 
 // File and Directory Processing

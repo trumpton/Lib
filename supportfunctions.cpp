@@ -1,8 +1,10 @@
 #include "supportfunctions.h"
+#include <QtGlobal>
 #include <QString>
+#include <QStringRef>
 #include <QStringList>
 #include <QDateTime>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QFile>
 #include <QDir>
 #include <QTextStream>
@@ -68,7 +70,7 @@ bool parseDirectory(QString& directory, QStringList& into, QString extension, bo
     return true ;
 }
 
-bool writeToFile(QString filename, QString data, bool append, QString codec)
+bool writeToFile(QString filename, QString data, bool append)
 {
     QFile file(filename);
     if (append) {
@@ -81,7 +83,13 @@ bool writeToFile(QString filename, QString data, bool append, QString codec)
 
     bool ok ;
     QTextStream out(&file);
-    out.setCodec(codec.toLatin1().data());
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    out.setCodec("UTF-8") ;
+#else
+    out.setEncoding(QStringConverter::Utf8) ;
+#endif
+
     out.setGenerateByteOrderMark(true) ;
     out << data ;
     ok = file.flush() ;
@@ -241,78 +249,90 @@ QString& dateTimeStringToZulu(QString str)
 int durationstringToInt(QString str)
 {
     static int response ;
-    QRegExp rx ;
-    rx.setMinimal(true) ;
+    QRegularExpression rx ;
+    QRegularExpressionMatch m ;
 
     response = 0 ;
     str = str.trimmed() ;
 
     // 1 week
     rx.setPattern("^([0-9]+) *[wW][a-zA-Z]*$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        response = rx.cap(1).toInt()*7*24*60 ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        response = m.captured(1).toInt()*7*24*60 ;
     }
 
     // 1 day
     rx.setPattern("^([0-9]+) *[dD][a-zA-Z]*$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        response = rx.cap(1).toInt()*24*60 ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        response = m.captured(1).toInt()*24*60 ;
     }
 
     // 1.5 days
+    // TODO - BUG: 1.05 will translate to 1.5
     rx.setPattern("^([0-9]+)\\.([0-9]+) *[dD][a-zA-Z]*$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        int point = rx.cap(2).toInt() ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        int point = m.captured(2).toInt() ;
         if (point<10) point*=10 ;
         if (point>99) point=100 ;
-        response = rx.cap(1).toInt()*24*60 + (point*24*60)/100 ;
+        response = m.captured(1).toInt()*24*60 + (point*24*60)/100 ;
     }
 
     // 1 day 30 minutes
     rx.setPattern("^([0-9]+) *[dD][a-zA-Z]* *([0-9]+) *[mM][a-zA-Z]*$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        response = rx.cap(1).toInt()*60*24 + rx.cap(2).toInt() ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        response = m.captured(1).toInt()*60*24 + m.captured(2).toInt() ;
     }
 
 
     // 1 day 5 hours 30 minutes
     rx.setPattern("^([0-9]+) *[dD][a-zA-Z]* *([0-9]+) *[hH][a-zA-Z]* *([0-9]+).*$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        response = rx.cap(1).toInt()*60*24 + rx.cap(2).toInt()*60 + rx.cap(3).toInt() ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        response = m.captured(1).toInt()*60*24 + m.captured(2).toInt()*60 + m.captured(3).toInt() ;
     }
 
 
     // 1 hour
     rx.setPattern("^([0-9]+) *[hH][.*][a-zA-Z]*$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        response = rx.cap(1).toInt()*60 ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        response = m.captured(1).toInt()*60 ;
     }
 
     // 1 hour 30 minutes / 1 hour 30 / 1h30
     rx.setPattern("^([0-9]+) *[hH][a-zA-Z]* *([0-9]+).*$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        response = rx.cap(1).toInt()*60 + rx.cap(2).toInt() ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        response = m.captured(1).toInt()*60 + m.captured(2).toInt() ;
     }
 
     // 1.5 hours
+    // TODO - BUG: 1.05 will translate to 1.5
     rx.setPattern("^([0-9]+)\\.([0-9]+) *[hH][a-zA-Z]*$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        int point = rx.cap(2).toInt() ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        int point = m.captured(2).toInt() ;
         if (point<10) point*=10 ;
         if (point>99) point=100 ;
-        response = rx.cap(1).toInt() * 60 + (point*60)/100 ;
+        response = m.captured(1).toInt() * 60 + (point*60)/100 ;
     }
 
     // 30 minutes
     rx.setPattern("^([0-9]+) *[mM][a-zA-Z]*$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        response = rx.cap(1).toInt() ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        response = m.captured(1).toInt() ;
     }
 
     // 25 (minutes)
     rx.setPattern("^([0-9]+)$") ;
-    if (response==0 && rx.indexIn(str)>=0) {
-        response = rx.cap(1).toInt() ;
+    m = rx.match(str) ;
+    if (response==0 && m.hasMatch()) {
+        response = m.captured(1).toInt() ;
     }
 
     return response ;
@@ -387,32 +407,34 @@ QString& xsDateToDate(QString xsDate)
 {
     static QString response ;
     int day=0, month=0, year=0 ;
-    QRegExp rx ;
-    rx.setMinimal(true) ;
+    QRegularExpression rx ;
+    QRegularExpressionMatch m ;
 
     response = "" ;
     QString str = xsDate.trimmed() ;
 
     // YYYY-MM-DD
     rx.setPattern("^([0-9]{2,4})-([0-9]{1,2})-([0-9]{1,2})$") ;
-    if (rx.indexIn(str)>=0) {
-        year = rx.cap(1).toInt() ;
-        month = rx.cap(2).toInt() ;
-        day = rx.cap(3).toInt() ;
+    m = rx.match(str) ;
+    if (m.hasMatch()) {
+        year = m.captured(1).toInt() ;
+        month = m.captured(2).toInt() ;
+        day = m.captured(3).toInt() ;
     }
 
     // MM-DD
     rx.setPattern("^([0-9]{1,2})-([0-9]{1,2})$") ;
+    m = rx.match(str) ;
     if (day==0) {
         year=0 ;
-        month=rx.cap(1).toInt() ;
-        day=rx.cap(2).toInt() ;
+        month=m.captured(1).toInt() ;
+        day=m.captured(2).toInt() ;
     }
 
     if (day!=0 && month!=0 && year!=0 && year!=1900) {
-        response = response.sprintf("%02d/%02d/%04d", day, month, year) ;
+        response = response.asprintf("%02d/%02d/%04d", day, month, year) ;
     } else if (day!=0 && month!=0) {
-        response = response.sprintf("%02d/%02d", day, month) ;
+        response = response.asprintf("%02d/%02d", day, month) ;
     } else {
         response = "" ;
     }
@@ -424,30 +446,33 @@ QString& dateToXsDate(QString date)
 {
     static QString response ;
     int day=0, month=0, year=0 ;
-    QRegExp rx ;
-    rx.setMinimal(false) ;
+    QRegularExpression rx ;
+    QRegularExpressionMatch m ;
 
     response = "" ;
     QString str = date.trimmed() ;
 
     // DD/MM/YYYY
     rx.setPattern("^([0-9]{1,2})[\\/\\- ]([0-9]{1,2})[\\/\\- ]([0-9]{2,4})$") ;
-    if (rx.indexIn(str)>=0) {
-        day = rx.cap(1).toInt() ;
-        month = rx.cap(2).toInt() ;
-        year = rx.cap(3).toInt() ;
+    m = rx.match(str) ;
+
+    if (m.hasMatch()) {
+        day = m.captured(1).toInt() ;
+        month = m.captured(2).toInt() ;
+        year =m.captured(3).toInt() ;
     }
 
     // DD/MM
     rx.setPattern("^([0-9]{1,2})[\\/\\- ]([0-9]{1,2})$") ;
-    if (rx.indexIn(str)>=0) {
-        day = rx.cap(1).toInt() ;
-        month = rx.cap(2).toInt() ;
+    m = rx.match(str) ;
+    if (m.hasMatch()) {
+        day = m.captured(1).toInt() ;
+        month = m.captured(2).toInt() ;
         year = 1900 ;
     }
 
     if (day!=0 && month!=0 && year!=0) {
-        response = response.sprintf("%04d-%02d-%02d", year, month, day) ;
+        response = response.asprintf("%04d-%02d-%02d", year, month, day) ;
     } else {
         response = "" ;
     }
@@ -512,16 +537,16 @@ QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::E
 
 QString& deAccent(QString& str)
 {
-    str.replace(QRegExp("[áàâä]"), "a");
-    str.replace(QRegExp("[éèëê]"), "e");
-    str.replace(QRegExp("[îï]"), "i");
-    str.replace(QRegExp("[óôö]"), "o");
-    str.replace(QRegExp("[œ]"), "oe");
-    str.replace(QRegExp("[ùúûü]"), "u");
-    str.replace(QRegExp("[ÿ]"), "y");
-    str.replace(QRegExp("[ç]"), "c");
-    str.replace(QRegExp("[ñ]"), "n");
-    str.replace(QRegExp("[ß]"), "ss");
+    str.replace(QRegularExpression("[áàâä]"), "a");
+    str.replace(QRegularExpression("[éèëê]"), "e");
+    str.replace(QRegularExpression("[îï]"), "i");
+    str.replace(QRegularExpression("[óôö]"), "o");
+    str.replace(QRegularExpression("[œ]"), "oe");
+    str.replace(QRegularExpression("[ùúûü]"), "u");
+    str.replace(QRegularExpression("[ÿ]"), "y");
+    str.replace(QRegularExpression("[ç]"), "c");
+    str.replace(QRegularExpression("[ñ]"), "n");
+    str.replace(QRegularExpression("[ß]"), "ss");
     return str ;
 }
 
@@ -552,7 +577,8 @@ QString buildDate()
     QString date = QString(__DATE__) ;
 
     QString day ;
-    int dayint = date.midRef(4,2).toInt() ;
+    QString daystr = date.mid(4,2) ;
+    int dayint = daystr.toInt() ;
     day = QString::number(dayint) ;
     if (dayint<10) day = QString("0") + day ;
 

@@ -1,6 +1,5 @@
 #include "lineeditnavigator.h"
 #include <QDir>
-#include <QRegExp>
 #include <QDate>
 #include <QApplication>
 #include <QInputDialog>
@@ -163,8 +162,8 @@ void LineEditNavigator::keyPressEvent(QKeyEvent *event)
     else if (key==Qt::Key_Minus || (key>=Qt::Key_A && key<=Qt::Key_Z) || (key>=Qt::Key_0 && key<=Qt::Key_9)) {
         QChar letter ;
         if (key==Qt::Key_Minus) letter = '-' ;
-        else if (key>=Qt::Key_A && key<=Qt::Key_Z) letter = ('a' + key - Qt::Key_A) ;
-        else letter = ('0' + key - Qt::Key_0) ;
+        else if (key>=Qt::Key_A && key<=Qt::Key_Z) letter = QChar('a' + key - Qt::Key_A) ;
+        else letter = QChar('0' + key - Qt::Key_0) ;
 
         int currentindex=ix ;
         bool finished=false ;
