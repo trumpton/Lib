@@ -27,10 +27,9 @@ WarningYesNo::~WarningYesNo()
 // Handle Y/N commands
 void WarningYesNo::keyPressEvent(QKeyEvent *event)
 {
-    QChar key = QChar(event->key()) ;
-
-    if (key.toLower()==yes) accept() ;
-    else if (key.toLower()==no) reject() ;
+    int k = event->key() ;
+    if (k==Qt::Key_Enter || k==Qt::Key_Y) accept() ;
+    else if (k==Qt::Key_Escape || k==Qt::Key_N) reject() ;
     else QDialog::keyPressEvent(event) ;
 }
 

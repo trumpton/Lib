@@ -1,7 +1,6 @@
 #include "supportfunctions.h"
 #include <QtGlobal>
 #include <QString>
-#include <QStringRef>
 #include <QStringList>
 #include <QDateTime>
 #include <QRegularExpression>
