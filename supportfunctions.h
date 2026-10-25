@@ -48,6 +48,10 @@ bool backupFile(QString& path, QString& filename) ;
 
 // Present a warning form and OK button, or YES/NO buttons
 bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString yestext = QString("Yes"), QChar yeskey = QChar('y'), QString notext = QString("No"), QChar nokey = QChar('n')) ;
+
+// As above, with a checkbox to the left of the buttons.  checked is set to the state of the checkbox when the
+// dialog closes.  Returns true for yes, as above.
+bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString yestext, QChar yeskey, QString notext, QChar nokey, QString checktext, bool checkdefault, bool &checked) ;
 bool warningOkDialog(QWidget *parent, QString title, QString message, bool iserror=false, bool beep=true) ;
 bool errorOkDialog(QWidget *parent, QString title, QString message) ;
 QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok) ;
