@@ -510,6 +510,19 @@ bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString
     return yn.exec()==QDialog::Accepted ;
 }
 
+bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString yestext, QChar yeskey, QString notext, QChar nokey, QString checktext, bool checkdefault, bool &checked)
+{
+    WarningYesNo yn(parent) ;
+    yn.setWindowTitle(title) ;
+    yn.setText(message) ;
+    yn.setButtons(yestext, yeskey, notext, nokey);
+    yn.setCheckBox(checktext, checkdefault) ;
+    play(Query) ;
+    bool result = yn.exec()==QDialog::Accepted ;
+    checked = yn.isChecked() ;
+    return result ;
+}
+
 
 bool warningOkDialog(QWidget *parent, QString title, QString message, bool iserror, bool beep)
 {

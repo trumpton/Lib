@@ -46,3 +46,15 @@ void WarningYesNo::setButtons(QString yestext, QChar yeskey, QString notext, QCh
     no = nokey.toLower() ;
 }
 
+void WarningYesNo::setCheckBox(QString text, bool checked)
+{
+    ui->checkBox->setText(text) ;
+    ui->checkBox->setChecked(checked) ;
+    ui->checkBox->setVisible(true) ;
+}
+
+bool WarningYesNo::isChecked()
+{
+    return ui->checkBox->isChecked() ;
+}
+

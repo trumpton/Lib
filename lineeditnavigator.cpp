@@ -126,6 +126,17 @@ const QString& LineEditNavigator::currentData()
     return itemData(ix) ;
 }
 
+// The punctuation character a key types, such as '+' or '#'.  Blank if the key does not type one.  Letters,
+// digits and spaces are not punctuation, and are handled by their keys.
+static QChar punctuationKey(QKeyEvent *event)
+{
+    QString text = event->text() ;
+    if (text.size()!=1) return QChar() ;
+    QChar c = text.at(0) ;
+    if (c.isLetterOrNumber() || c.isSpace() || !c.isPrint()) return QChar() ;
+    return c ;
+}
+
 void LineEditNavigator::keyPressEvent(QKeyEvent *event)
 {
     QString txt="" ;
@@ -159,11 +170,13 @@ void LineEditNavigator::keyPressEvent(QKeyEvent *event)
         updated=true ;
     }
 
-    else if (key==Qt::Key_Minus || (key>=Qt::Key_A && key<=Qt::Key_Z) || (key>=Qt::Key_0 && key<=Qt::Key_9)) {
+    else if (key==Qt::Key_Minus || (key>=Qt::Key_A && key<=Qt::Key_Z) || (key>=Qt::Key_0 && key<=Qt::Key_9) ||
+             !punctuationKey(event).isNull()) {
         QChar letter ;
         if (key==Qt::Key_Minus) letter = '-' ;
         else if (key>=Qt::Key_A && key<=Qt::Key_Z) letter = QChar('a' + key - Qt::Key_A) ;
-        else letter = QChar('0' + key - Qt::Key_0) ;
+        else if (key>=Qt::Key_0 && key<=Qt::Key_9) letter = QChar('0' + key - Qt::Key_0) ;
+        else letter = punctuationKey(event) ;
 
         int currentindex=ix ;
         bool finished=false ;
