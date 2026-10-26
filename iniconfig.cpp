@@ -60,7 +60,7 @@ int IniConfig::numSections()
 QString IniConfig::get(QString key)
 {
     QString result ;
-    if (settings==NULL) result = "ERROR" ;
+    if (settings==NULL) result = "" ;
     else result = settings->value(selectedSection + "/" + key).toString() ;
     return ExpandVars(result) ;
 }
@@ -70,7 +70,7 @@ QString IniConfig::get(QString section, QString key)
     QString result = QString("") ;
     QString path = section + QString("/") + key ;
     if (!settings) {
-        result = "ERROR" ;
+        result = "" ;
     } else {
         QVariant var = settings->value(path) ;
         if (var.isValid()) result = var.toString() ;
