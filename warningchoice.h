@@ -8,11 +8,12 @@
 
 class QTextEdit ;
 class QPushButton ;
+class QVBoxLayout ;
 
-// A dialog that asks the user to choose one of several actions, as WarningYesNo and WarningOk show their text.
-// The text is a read-only text box, which has the focus when the dialog opens, so a braille display reads it.  Tab
-// moves the focus to the choices.  Each choice is a button, showing its letter key, with its description under it
-// (and read with it).  A letter key chooses at once, Enter chooses the default and Escape cancels.
+// A dialog that asks the user to choose one of several actions.  It shows its question as WarningOk and WarningYesNo do:
+// an icon, and a text box with the focus when the dialog opens, so a braille display reads it and a cursor shows.  Tab moves
+// the focus to the choices.  Each choice is a square button showing its letter, with its label and description to its right.
+// A letter key chooses at once, Enter chooses the default and Escape cancels.
 class WarningChoice : public QDialog
 {
     Q_OBJECT
@@ -35,6 +36,7 @@ public:
 
 private:
     QTextEdit *textWarning ;
+    QVBoxLayout *layout ;
     QList<QPushButton *> buttons ;
     QList<QChar> keys ;
     int defaultindex ;

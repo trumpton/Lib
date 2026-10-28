@@ -1,8 +1,15 @@
 #include "warningchoice.h"
 
+#include <QApplication>
+#include <QHBoxLayout>
+#include <QIcon>
 #include <QLabel>
+#include <QSizePolicy>
 #include <QPushButton>
+#include <QStyle>
+#include <QTextDocument>
 #include <QTextEdit>
+#include <cmath>
 #include <QVBoxLayout>
 
 WarningChoice::WarningChoice(QWidget *parent) :
@@ -10,14 +17,29 @@ WarningChoice::WarningChoice(QWidget *parent) :
     defaultindex(-1),
     chosen(-1)
 {
-    QVBoxLayout *layout = new QVBoxLayout(this) ;
+    layout = new QVBoxLayout(this) ;
+
+    // The question, with an icon to its left, as WarningOk and WarningYesNo show theirs
+    QHBoxLayout *top = new QHBoxLayout() ;
+    QStyle *s = QApplication::style() ;
+    int sz = s->pixelMetric(QStyle::PM_MessageBoxIconSize) ;
+    QLabel *icon = new QLabel(this) ;
+    icon->setPixmap(s->standardIcon(QStyle::SP_MessageBoxQuestion).pixmap(sz,sz)) ;
+    icon->setAlignment(Qt::AlignTop) ;
+    top->addWidget(icon) ;
 
     textWarning = new QTextEdit(this) ;
-    textWarning->setReadOnly(true) ;
+    textWarning->setFrameShape(QFrame::NoFrame) ;
+    textWarning->setFrameShadow(QFrame::Plain) ;
+    textWarning->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff) ;
+    textWarning->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff) ;
     textWarning->setTabChangesFocus(true) ;
+    textWarning->setTextInteractionFlags(Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse) ;
+    textWarning->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum) ;   // the choices take the space below
     textWarning->viewport()->setAutoFillBackground(false) ;
     textWarning->installEventFilter(this) ;
-    layout->addWidget(textWarning) ;
+    top->addWidget(textWarning, 1) ;
+    layout->addLayout(top) ;
 
     // The choices go above this stretch, at the foot of the layout
     layout->addStretch(0) ;
@@ -37,17 +59,21 @@ int WarningChoice::addChoice(QString label, QChar key, QString description)
     int index = buttons.size() ;
     QChar letter = key.toLower() ;
 
-    QPushButton *button = new QPushButton(QString("%1 (%2)").arg(label).arg(letter), this) ;
-    button->setAccessibleDescription(description) ;
+    // A square button showing the letter, and the label and description to its right, on two lines
+    int square = fontMetrics().height() * 2 + 8 ;
+    QPushButton *button = new QPushButton(QString(letter).toUpper(), this) ;
+    button->setFixedSize(square, square) ;
+    button->setAccessibleName(label) ;
+    button->setAccessibleDescription(QString("%1. Press %2.").arg(description).arg(letter)) ;
     connect(button, &QPushButton::clicked, this, [this, index]() { chooseIndex(index) ; }) ;
 
-    QLabel *details = new QLabel(description, this) ;
-    details->setWordWrap(true) ;
-    details->setContentsMargins(20, 0, 0, 8) ;
+    QLabel *details = new QLabel(label + "\n" + description, this) ;
+    details->setAlignment(Qt::AlignLeft|Qt::AlignVCenter) ;
 
-    QVBoxLayout *layout = qobject_cast<QVBoxLayout *>(this->layout()) ;
-    layout->insertWidget(layout->count()-1, button) ;
-    layout->insertWidget(layout->count()-1, details) ;
+    QHBoxLayout *row = new QHBoxLayout() ;
+    row->addWidget(button, 0, Qt::AlignTop) ;
+    row->addWidget(details, 1) ;
+    layout->insertLayout(layout->count()-1, row) ;
 
     buttons.append(button) ;
     keys.append(letter) ;
@@ -63,8 +89,8 @@ int WarningChoice::choose()
 {
     chosen = -1 ;
 
-    // Wide enough that the choices and their descriptions do not wrap, at the font in use
-    setMinimumWidth(fontMetrics().horizontalAdvance(QString(90, 'x'))) ;
+    // Wide enough for the descriptions on one line
+    setMinimumWidth(fontMetrics().horizontalAdvance(QString(80, 'x'))) ;
 
     if (exec()==QDialog::Accepted) return chosen ;
     return -1 ;
@@ -76,10 +102,14 @@ void WarningChoice::chooseIndex(int index)
     accept() ;
 }
 
-// The text box has the focus when the dialog is shown, as in WarningYesNo and WarningOk
+// The question box is as tall as its text, measured once shown, when its fonts and width are settled.  The text box
+// has the focus, as in WarningOk and WarningYesNo.
 void WarningChoice::showEvent(QShowEvent *event)
 {
     QDialog::showEvent(event) ;
+    QTextDocument *document = textWarning->document() ;
+    document->setTextWidth(textWarning->viewport()->width()) ;
+    textWarning->setFixedHeight(qCeil(document->size().height()) + 2*textWarning->frameWidth() + 8) ;
     textWarning->setFocus() ;
 }
 
