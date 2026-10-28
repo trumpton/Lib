@@ -7,11 +7,12 @@
 #include <QList>
 
 class QTextEdit ;
-class QCommandLinkButton ;
+class QPushButton ;
 
-// A dialog that asks the user to choose one of several actions.  Each choice has a button, its own letter key, and an
-// optional description, which a screen reader reads with it.  The letter key chooses at once, Enter chooses the default,
-// and Escape cancels.  The choices stack one below the other and their text wraps, so the dialog works at large fonts.
+// A dialog that asks the user to choose one of several actions, as WarningYesNo and WarningOk show their text.
+// The text is a read-only text box, which has the focus when the dialog opens, so a braille display reads it.  Tab
+// moves the focus to the choices.  Each choice is a button, showing its letter key, with its description under it
+// (and read with it).  A letter key chooses at once, Enter chooses the default and Escape cancels.
 class WarningChoice : public QDialog
 {
     Q_OBJECT
@@ -34,12 +35,14 @@ public:
 
 private:
     QTextEdit *textWarning ;
-    QList<QCommandLinkButton *> buttons ;
+    QList<QPushButton *> buttons ;
     QList<QChar> keys ;
     int defaultindex ;
     int chosen ;
 
     void chooseIndex(int index) ;
+    void showEvent(QShowEvent *event) ;
+    bool eventFilter(QObject *watched, QEvent *event) ;
     void keyPressEvent(QKeyEvent *event) ;
 };
 
