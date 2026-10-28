@@ -41,8 +41,6 @@ WarningChoice::WarningChoice(QWidget *parent) :
     top->addWidget(textWarning, 1) ;
     layout->addLayout(top) ;
 
-    // The choices go above this stretch, at the foot of the layout
-    layout->addStretch(0) ;
 }
 
 WarningChoice::~WarningChoice()
@@ -73,7 +71,7 @@ int WarningChoice::addChoice(QString label, QChar key, QString description)
     QHBoxLayout *row = new QHBoxLayout() ;
     row->addWidget(button, 0, Qt::AlignTop) ;
     row->addWidget(details, 1) ;
-    layout->insertLayout(layout->count()-1, row) ;
+    layout->addLayout(row) ;
 
     buttons.append(button) ;
     keys.append(letter) ;
@@ -110,6 +108,10 @@ void WarningChoice::showEvent(QShowEvent *event)
     QTextDocument *document = textWarning->document() ;
     document->setTextWidth(textWarning->viewport()->width()) ;
     textWarning->setFixedHeight(qCeil(document->size().height()) + 2*textWarning->frameWidth() + 8) ;
+
+    // The dialog is as tall as its question and choices, and no taller
+    layout->activate() ;
+    resize(qMax(sizeHint().width(), minimumWidth()), sizeHint().height()) ;
     textWarning->setFocus() ;
 }
 
