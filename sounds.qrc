@@ -11,5 +11,7 @@
         <file>sounds/query.wav</file>
         <file>sounds/wrapped.wav</file>
         <file>sounds/sent.wav</file>
+        <file>sounds/switchon.wav</file>
+        <file>sounds/switchoff.wav</file>
     </qresource>
 </RCC>

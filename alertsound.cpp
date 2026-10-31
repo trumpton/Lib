@@ -22,6 +22,9 @@ QSoundEffect *sound_filesave ;
 
 QSoundEffect *sound_sent ;
 
+QSoundEffect *sound_switchon ;
+QSoundEffect *sound_switchoff ;
+
 static int sound_initialised = 0 ;
 
 void initSound(QObject *parent = nullptr)
@@ -59,6 +62,12 @@ void initSound(QObject *parent = nullptr)
     sound_sent = new QSoundEffect(parent) ;
     sound_sent->setSource(QUrl("qrc:/sounds/sent.wav")) ;
 
+    sound_switchon = new QSoundEffect(parent) ;
+    sound_switchon->setSource(QUrl("qrc:/sounds/switchon.wav")) ;
+
+    sound_switchoff = new QSoundEffect(parent) ;
+    sound_switchoff->setSource(QUrl("qrc:/sounds/switchoff.wav")) ;
+
     sound_initialised = 1 ;
 }
 
@@ -78,6 +87,8 @@ void play(enum soundType type)
     case FileOpen: sound = sound_fileopen ; break ;
     case FileSave: sound = sound_filesave ; break ;
     case Sent: sound = sound_sent ; break ;
+    case SwitchOn: sound = sound_switchon ; break ;
+    case SwitchOff: sound = sound_switchoff ; break ;
     default:
     case Ok:
         sound = sound_ok ; break ;
@@ -102,6 +113,8 @@ void closeSound()
       delete sound_fileopen ;
       delete sound_filesave ;
       delete sound_sent ;
+      delete sound_switchon ;
+      delete sound_switchoff ;
       sound_initialised=0 ;
   }
 }
