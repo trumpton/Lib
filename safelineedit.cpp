@@ -5,8 +5,32 @@
 #include "../Lib/alertsound.h"
 
 SafeLineEdit::SafeLineEdit(QWidget *parent) :
-    QLineEdit(parent)
+    QLineEdit(parent),
+    keepcursor(false)
 {
+}
+
+void SafeLineEdit::preloadText(const QString &text)
+{
+    setText(text) ;
+    deselect() ;
+    end(false) ;
+
+    // When the field has the focus already, the cursor is where it is set.  Otherwise it is kept at the end on the next focus-in
+    keepcursor = !hasFocus() ;
+}
+
+void SafeLineEdit::focusAtEnd()
+{
+    keepcursor = true ;
+    setFocus() ;
+
+    // Focus-in is not sent when the field has the focus already, so the cursor is moved here
+    if (hasFocus()) {
+        deselect() ;
+        end(false) ;
+        keepcursor = false ;
+    }
 }
 
 
@@ -41,5 +65,18 @@ void SafeLineEdit::keyPressEvent(QKeyEvent *event)
 void SafeLineEdit::focusInEvent ( QFocusEvent * event)
 {
     QLineEdit::focusInEvent(event) ;
-    this->setCursorPosition(0) ;
+    if (keepcursor) {
+        deselect() ;
+        end(false) ;
+        keepcursor = false ;
+    } else {
+        this->setCursorPosition(0) ;
+    }
+}
+
+void SafeLineEdit::focusOutEvent ( QFocusEvent * event)
+{
+    // The cursor goes to the start on a later focus-in, unless it was set to the end again
+    keepcursor = false ;
+    QLineEdit::focusOutEvent(event) ;
 }
