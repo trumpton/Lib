@@ -30,7 +30,7 @@ QDate dateInputDialog(QWidget *parent, QString title, QString prompt, QDate defa
     edit->setDateTime(when) ;
     label->setBuddy(edit) ;
     edit->setAccessibleName(prompt) ;
-    edit->setAccessibleDescription("Use the Up and Down keys to change the day, month or year, or type a number") ;
+    edit->setAccessibleDescription("Up and Down change a part, or type a number") ;
     layout->addWidget(edit) ;
 
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog) ;
