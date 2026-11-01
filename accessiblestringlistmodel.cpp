@@ -109,7 +109,7 @@ QModelIndex AccessibleStringListModel::find(QVariant user, int startrow)
     QString userstring = user.toString() ;
     for (int i=startrow; result<0 && i<modeldata.count(); i++) {
         const QList<QVariant>& entry = modeldata.at(i) ;
-        QString srch = entry.toVector().at(2).toString() ;
+        QString srch = entry.at(0).toString() ;     // the displayed text (slot 2 is the hidden ID)
         if (srch.contains(userstring, Qt::CaseInsensitive)) result=i ;
     }
     if (result<0) return QModelIndex() ;
