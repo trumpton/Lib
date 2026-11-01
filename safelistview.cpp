@@ -20,6 +20,12 @@ void SafeListView::setCurrentIndex(const QModelIndex &idx)
     }
 }
 
+void SafeListView::layoutNow()
+{
+    // The entries are laid out after the model has changed, not at once, so this does it when they are needed now
+    executeDelayedItemsLayout() ;
+}
+
 void SafeListView::focusInEvent(QFocusEvent * e)
 {    
     QListView::focusInEvent(e) ;
