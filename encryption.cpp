@@ -162,29 +162,29 @@ void Encryption::setKey()
     ui->label3->setVisible(true) ;
     ui->lineEdit3->setVisible(true) ;
 
-    ui->label0->setText("Encryption Key") ;
+    ui->label0->setText("File encryption key") ;
     ui->label1->setText("Re-enter") ;
-    ui->label2->setText("Initial Password") ;
+    ui->label2->setText("Login password") ;
     ui->label3->setText("Re-enter") ;
     ui->lineEdit0->clear() ;
     ui->lineEdit1->clear() ;
     ui->lineEdit2->clear() ;
     ui->lineEdit3->clear() ;
     ui->lineEdit0->setFocus() ;
-    this->setWindowTitle("Enter Key and Password") ;
+    this->setWindowTitle("Enter File Encryption Key and Login Password") ;
 
     if (this->exec()==QDialog::Accepted) {
 
         if (ui->lineEdit0->text().compare(ui->lineEdit1->text())!=0) {
             // Error, Mismatch
-            QMessageBox::critical(this, "Set Key", "Key mismatch, update not processed", QMessageBox::Ok) ;
+            QMessageBox::critical(this, "Set File Encryption Key", "File encryption key mismatch, update not processed", QMessageBox::Ok) ;
             return ;
         }
         hashKey = QCryptographicHash::hash(ui->lineEdit0->text().toLocal8Bit(), HASHALG);
 
         if (ui->lineEdit2->text().compare(ui->lineEdit3->text())!=0) {
             // Error, Mismatch
-            QMessageBox::critical(this, "Set Key", "Password mismatch, update not processed", QMessageBox::Ok) ;
+            QMessageBox::critical(this, "Set File Encryption Key", "Login password mismatch, update not processed", QMessageBox::Ok) ;
             return ;
         }
         hashPass = QCryptographicHash::hash(ui->lineEdit2->text().toLocal8Bit(), HASHALG);
@@ -245,14 +245,14 @@ void Encryption::changePassword()
     ui->lineEdit2->clear() ;
     ui->lineEdit3->clear() ;
     ui->lineEdit1->setFocus() ;
-    this->setWindowTitle("Change Password") ;
+    this->setWindowTitle("Change Login Password") ;
 
     if (this->exec()==QDialog::Accepted) {
 
         // Check Password Match
         if (ui->lineEdit2->text().compare(ui->lineEdit3->text())!=0) {
             // Error, Mismatch
-            QMessageBox::critical(this, "Change Password", "Password mismatch, update aborted", QMessageBox::Ok) ;
+            QMessageBox::critical(this, "Change Login Password", "Login password mismatch, update aborted", QMessageBox::Ok) ;
             return ;
         }
 
