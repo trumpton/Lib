@@ -4,6 +4,28 @@
 #include <QStandardPaths>
 #include <QApplication>
 
+// The built-in variable names.  They are parsed first, and a [var] entry with one of these names is ignored.
+static const QStringList builtinNames = { "HOME", "INI", "APPDIR" } ;
+
+// Replaces each $(NAME) in the text with its value, for every name in the map, once
+static QString replaceVariables(QString text, const QMap<QString,QString> &vars)
+{
+    for (auto it = vars.constBegin(); it != vars.constEnd(); ++it)
+        text.replace("$(" + it.key() + ")", it.value()) ;
+    return text ;
+}
+
+// Replaces variables for at most IniConfig::PASSES passes, stopping early when a pass changes nothing
+static QString expandPasses(QString text, const QMap<QString,QString> &vars)
+{
+    for (int pass=0 ; pass<IniConfig::PASSES ; pass++) {
+        QString next = replaceVariables(text, vars) ;
+        if (next==text) break ;
+        text = next ;
+    }
+    return text ;
+}
+
 IniConfig::IniConfig()
 {
     settings = NULL ;
@@ -22,12 +44,67 @@ bool IniConfig::init(QString inifile)
     if (!settings) return false ;
     if (numSections()!=0) {
         path = QFileInfo(inifile).canonicalPath() ;
+        parseOnLoad() ;
         return true ;
     } else {
         delete settings ;
         settings=NULL ;
         path="" ;
         return false ;
+    }
+}
+
+// Expands every variable once, in this order: the built-in names, then the [var] entries (up to PASSES passes), then every
+// other value (up to PASSES passes, with the expanded [var] entries).
+void IniConfig::parseOnLoad()
+{
+    values.clear() ;
+    variables.clear() ;
+    problems.clear() ;
+    if (!settings) return ;
+
+    QMap<QString,QString> builtin ;
+    builtin["HOME"] = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) ;
+    builtin["INI"] = path ;
+    builtin["APPDIR"] = QApplication::applicationDirPath() ;
+
+    // The [var] entries, without the built-in names
+    QMap<QString,QString> raw ;
+    settings->beginGroup("var") ;
+    for (const QString &key : settings->childKeys()) {
+        if (builtinNames.contains(key)) {
+            problems << QString("[var] %1 is a built-in variable and is not overridden").arg(key) ;
+            continue ;
+        }
+        raw[key] = settings->value(key).toString() ;
+    }
+    settings->endGroup() ;
+
+    // Expand the [var] entries, with the built-in names, up to PASSES passes
+    QMap<QString,QString> resolved = raw ;
+    for (int pass=0 ; pass<PASSES ; pass++) {
+        bool changed = false ;
+        QMap<QString,QString> now = builtin ;
+        for (auto it = resolved.constBegin() ; it != resolved.constEnd() ; ++it) now[it.key()] = it.value() ;
+        for (auto it = resolved.begin() ; it != resolved.end() ; ++it) {
+            QString next = replaceVariables(it.value(), now) ;
+            if (next != it.value()) { it.value() = next ; changed = true ; }
+        }
+        if (!changed) break ;
+    }
+
+    // The variables the other values and the templates can use
+    variables = builtin ;
+    for (auto it = resolved.constBegin() ; it != resolved.constEnd() ; ++it) variables[it.key()] = it.value() ;
+
+    // Every value: the groups in the file, then its keys
+    for (const QString &group : settings->childGroups()) {
+        settings->beginGroup(group) ;
+        for (const QString &key : settings->childKeys()) {
+            QString raw_value = settings->value(key).toString() ;
+            values[group + "/" + key] = expandPasses(raw_value, variables) ;
+        }
+        settings->endGroup() ;
     }
 }
 
@@ -59,23 +136,12 @@ int IniConfig::numSections()
 
 QString IniConfig::get(QString key)
 {
-    QString result ;
-    if (settings==NULL) result = "" ;
-    else result = settings->value(selectedSection + "/" + key).toString() ;
-    return ExpandVars(result) ;
+    return values.value(selectedSection + "/" + key) ;
 }
 
 QString IniConfig::get(QString section, QString key)
 {
-    QString result = QString("") ;
-    QString path = section + QString("/") + key ;
-    if (!settings) {
-        result = "" ;
-    } else {
-        QVariant var = settings->value(path) ;
-        if (var.isValid()) result = var.toString() ;
-    }
-    return ExpandVars(result) ;
+    return values.value(section + "/" + key) ;
 }
 
 
@@ -91,38 +157,14 @@ bool IniConfig::isset(QString key)
     else return false ;
 }
 
-QString IniConfig::ExpandVars(QString src)
+QString IniConfig::variable(QString name) const
 {
-    // Expand entries from 'var' section - loop until nothing more to change
-    // And include count to trap VAR=$VAR
-    if (settings) {
-        bool changed ;
-        int count=0 ;
-        do {
-            changed=false ;
-            count++ ;
-            settings->beginGroup("var") ;
-            const QStringList childKeys = settings->childKeys();
-            foreach (const QString &childKey, childKeys) {
-                // TODO: Get childKey to the right of the slash
-                QString var = QString("$") + childKey.toLatin1().data() ;
-                QString value = settings->value(childKey).toString() ;
-                QString oldsrc = src ;
-                src = src.replace(var, value) ;
-                if (oldsrc.compare(src)!=0) changed=true ;
-            }
-            settings->endGroup() ;
-        } while (changed && count<100) ;
+    return variables.value(name) ;
+}
 
-        // Now, include the standard entries
-
-        src = src.replace("$CONFIG", QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/TrumptonApps") ;
-        src = src.replace("$APPDIR", QApplication::applicationDirPath()) ;
-        src = src.replace("$HOME", QStandardPaths::writableLocation(QStandardPaths::HomeLocation)) ;
-        src = src.replace("$INI", canonicalPath()) ;
-    }
-    return src ;
-
+QString IniConfig::expandVariables(QString text) const
+{
+    return expandPasses(text, variables) ;
 }
 
 // TODO: GetIcon
