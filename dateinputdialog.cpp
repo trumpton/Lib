@@ -6,6 +6,7 @@
 #include "dateinputdialog.h"
 #include "accessibledatetimeedit.h"
 #include "alertsound.h"
+#include "dialogfocus.h"
 
 QDate dateInputDialog(QWidget *parent, QString title, QString prompt, QDate defaultdate, bool *ok)
 {
@@ -41,7 +42,7 @@ QDate dateInputDialog(QWidget *parent, QString title, QString prompt, QDate defa
     QObject::connect(edit, &QLineEdit::returnPressed, &dialog, &QDialog::accept) ;
 
     edit->setFocus() ;
-    bool accepted = (dialog.exec()==QDialog::Accepted) ;
+    bool accepted = (execFocused(&dialog)==QDialog::Accepted) ;
     if (ok) *ok = accepted ;
 
     return accepted ? edit->getDateTime().date() : QDate() ;

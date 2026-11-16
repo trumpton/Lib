@@ -17,6 +17,7 @@
 #include "warningyesno.h"
 #include "warningok.h"
 #include "alertsound.h"
+#include "dialogfocus.h"
 
 #ifdef Q_OS_WIN
 #include <windows.h> // for Sleep
@@ -518,7 +519,7 @@ bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString
     yn.setButtons(yestext, yeskey, notext, nokey);
     yn.setCheckBox(checktext, checkdefault) ;
     play(Query) ;
-    bool result = yn.exec()==QDialog::Accepted ;
+    bool result = execFocused(&yn)==QDialog::Accepted ;
     checked = yn.isChecked() ;
     return result ;
 }
@@ -533,7 +534,7 @@ bool warningOkDialog(QWidget *parent, QString title, QString message, bool iserr
         if (iserror) play(Error) ;
         else play(Query) ;
     }
-    return yn.exec()==QDialog::Accepted ;
+    return execFocused(&yn)==QDialog::Accepted ;
 }
 
 bool errorOkDialog(QWidget *parent, QString title, QString message)
@@ -544,7 +545,34 @@ bool errorOkDialog(QWidget *parent, QString title, QString message)
 QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok)
 {
     play(Query) ;
-    return QInputDialog::getText(parent, title,  prompt, echo, defaulttext, ok) ;
+    QInputDialog dialog(parent) ;
+    dialog.setWindowTitle(title) ;
+    dialog.setLabelText(prompt) ;
+    dialog.setTextEchoMode(echo) ;
+    dialog.setTextValue(defaulttext) ;
+    bool accepted = execFocused(&dialog)==QDialog::Accepted ;
+    if (ok) *ok = accepted ;
+    return accepted ? dialog.textValue() : QString() ;
+}
+
+void criticalDialog(QWidget *parent, QString title, QString message)
+{
+    QMessageBox box(QMessageBox::Critical, title, message, QMessageBox::Ok, parent) ;
+    execFocused(&box) ;
+}
+
+bool deliberateYesNoDialog(QWidget *parent, QString title, QString message, QString spokenMessage, QString yestext, QChar yeskey,
+                           QString notext, QChar nokey, QString yesdescription, QString nodescription)
+{
+    WarningYesNo yn(parent) ;
+    yn.setWindowTitle(title) ;
+    yn.setText(message) ;
+    if (!spokenMessage.isEmpty()) yn.setSpokenText(spokenMessage) ;
+    yn.setButtons(yestext, yeskey, notext, nokey) ;
+    yn.setButtonDescriptions(yesdescription, nodescription) ;
+    yn.setFocusOnYes() ;
+    play(Query) ;
+    return execFocused(&yn)==QDialog::Accepted ;
 }
 
 QString& deAccent(QString& str)

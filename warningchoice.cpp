@@ -1,4 +1,5 @@
 #include "warningchoice.h"
+#include "dialogfocus.h"
 
 #include <QApplication>
 #include <QHBoxLayout>
@@ -90,7 +91,7 @@ int WarningChoice::choose()
     // Wide enough for the descriptions on one line
     setMinimumWidth(fontMetrics().horizontalAdvance(QString(80, 'x'))) ;
 
-    if (exec()==QDialog::Accepted) return chosen ;
+    if (execFocused(this)==QDialog::Accepted) return chosen ;
     return -1 ;
 }
 

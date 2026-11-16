@@ -1,6 +1,8 @@
 #include "encryption.h"
 #include "ui_encryption.h"
 #include "aes.h"
+#include "dialogfocus.h"
+#include "supportfunctions.h"
 
 #include <QCryptographicHash>
 #include <QSettings>
@@ -173,18 +175,18 @@ void Encryption::setKey()
     ui->lineEdit0->setFocus() ;
     this->setWindowTitle("Enter File Encryption Key and Login Password") ;
 
-    if (this->exec()==QDialog::Accepted) {
+    if (execFocused(this)==QDialog::Accepted) {
 
         if (ui->lineEdit0->text().compare(ui->lineEdit1->text())!=0) {
             // Error, Mismatch
-            QMessageBox::critical(this, "Set File Encryption Key", "File encryption key mismatch, update not processed", QMessageBox::Ok) ;
+            criticalDialog(this, "Set File Encryption Key", "File encryption key mismatch, update not processed") ;
             return ;
         }
         hashKey = QCryptographicHash::hash(ui->lineEdit0->text().toLocal8Bit(), HASHALG);
 
         if (ui->lineEdit2->text().compare(ui->lineEdit3->text())!=0) {
             // Error, Mismatch
-            QMessageBox::critical(this, "Set File Encryption Key", "Login password mismatch, update not processed", QMessageBox::Ok) ;
+            criticalDialog(this, "Set File Encryption Key", "Login password mismatch, update not processed") ;
             return ;
         }
         hashPass = QCryptographicHash::hash(ui->lineEdit2->text().toLocal8Bit(), HASHALG);
@@ -198,7 +200,7 @@ void Encryption::setKey()
     if (hashKey.length()==HASHB && hashPass.length()==HASHB) {
         if (!sharedmem.lock()) {
             // Error locking memory
-            QMessageBox::critical(this, "Set Key", "Unable to lock shared memory", QMessageBox::Ok) ;
+            criticalDialog(this, "Set Key", "Unable to lock shared memory") ;
             return ;
         } else {
             ShMem *shm ;
@@ -218,7 +220,7 @@ void Encryption::setKey()
             sharedmem.unlock() ;
             if (!saveKey()) {
                 // Error saving key
-                QMessageBox::critical(this, "Set Key", "Unable to store the key", QMessageBox::Ok) ;
+                criticalDialog(this, "Set Key", "Unable to store the key") ;
                 return ;
             }
         }
@@ -247,18 +249,18 @@ void Encryption::changePassword()
     ui->lineEdit1->setFocus() ;
     this->setWindowTitle("Change Login Password") ;
 
-    if (this->exec()==QDialog::Accepted) {
+    if (execFocused(this)==QDialog::Accepted) {
 
         // Check Password Match
         if (ui->lineEdit2->text().compare(ui->lineEdit3->text())!=0) {
             // Error, Mismatch
-            QMessageBox::critical(this, "Change Login Password", "Login password mismatch, update aborted", QMessageBox::Ok) ;
+            criticalDialog(this, "Change Login Password", "Login password mismatch, update aborted") ;
             return ;
         }
 
         if (!sharedmem.lock()) {
             // Error locking shared memory
-            QMessageBox::critical(this, "Change Password", "Unable to lock shared memory", QMessageBox::Ok) ;
+            criticalDialog(this, "Change Password", "Unable to lock shared memory") ;
             return ;
 
         } else {
@@ -271,7 +273,7 @@ void Encryption::changePassword()
                 if ((unsigned char)hashOldPassword[i+HALFHASHB]!=shm->passwordhash[i]) {
                     sharedmem.unlock() ;
                     // Invalid Old Password
-                    QMessageBox::critical(this, "Change Password", "Old Password incorrect, update aborted", QMessageBox::Ok) ;
+                    criticalDialog(this, "Change Password", "Old Password incorrect, update aborted") ;
                     return ;
                 }
             }
@@ -295,7 +297,7 @@ void Encryption::changePassword()
 
             if (!saveKey()) {
                 // Error saving Key
-                QMessageBox::critical(this, "Change Password", "Error saving key, update aborted", QMessageBox::Ok) ;
+                criticalDialog(this, "Change Password", "Error saving key, update aborted") ;
                 return ;
             }
         }
@@ -330,7 +332,7 @@ void Encryption::login()
         ui->lineEdit2->setFocus() ;
         this->setWindowTitle("Login") ;
 
-        if (this->exec()!=QDialog::Accepted) {
+        if (execFocused(this)!=QDialog::Accepted) {
             return ;
         }
 
@@ -341,7 +343,7 @@ void Encryption::login()
 
     if (!sharedmem.lock()) {
         // Error Locking Memory
-        QMessageBox::critical(this, "Login", "Error locking memory, login aborted", QMessageBox::Ok) ;
+        criticalDialog(this, "Login", "Error locking memory, login aborted") ;
         return ;
 
     } else {
@@ -352,7 +354,7 @@ void Encryption::login()
         if (!shm->ciphertextkeypresent) {
             sharedmem.unlock() ;
             // No Ciphertext Key Present
-            QMessageBox::critical(this, "Login", "No Key is present, login aborted", QMessageBox::Ok) ;
+            criticalDialog(this, "Login", "No Key is present, login aborted") ;
 
             // Delete stored password
             passwordStore(Encryption::Delete, password) ;
@@ -447,7 +449,7 @@ void Encryption::logout()
 {
     if (!sharedmem.lock()) {
         // Error Locking Memory
-        QMessageBox::critical(this, "Logout", "Error locking memory, logout aborted", QMessageBox::Ok) ;
+        criticalDialog(this, "Logout", "Error locking memory, logout aborted") ;
         return ;
 
     } else {

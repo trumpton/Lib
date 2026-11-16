@@ -15,6 +15,9 @@ WarningYesNo::WarningYesNo(QWidget *parent) :
     ui->icon->setPixmap(i.pixmap(sz,sz)) ;
     ui->textEditWarning->viewport()->setAutoFillBackground( false );
     ui->textEditWarning->setFocus() ;
+    // Names for the buttons, so that a screen test can find them (the message box is textEditWarning, from the form)
+    ui->buttonBox->button(QDialogButtonBox::Yes)->setObjectName("warningYes") ;
+    ui->buttonBox->button(QDialogButtonBox::No)->setObjectName("warningNo") ;
     yes = QChar('y') ;
     no = QChar('n') ;
 }
@@ -28,8 +31,11 @@ WarningYesNo::~WarningYesNo()
 void WarningYesNo::keyPressEvent(QKeyEvent *event)
 {
     int k = event->key() ;
-    if (k==Qt::Key_Enter || k==Qt::Key_Y) accept() ;
-    else if (k==Qt::Key_Escape || k==Qt::Key_N) reject() ;
+    QString typed = event->text().toLower() ;
+    if (k==Qt::Key_Enter || k==Qt::Key_Return) accept() ;
+    else if (k==Qt::Key_Escape) reject() ;
+    else if (!yes.isNull() && typed==QString(yes)) accept() ;
+    else if (!no.isNull() && typed==QString(no)) reject() ;
     else QDialog::keyPressEvent(event) ;
 }
 
@@ -44,6 +50,22 @@ void WarningYesNo::setButtons(QString yestext, QChar yeskey, QString notext, QCh
     ui->buttonBox->button(QDialogButtonBox::No)->setText(notext) ;
     yes = yeskey.toLower() ;
     no = nokey.toLower() ;
+}
+
+void WarningYesNo::setSpokenText(QString text)
+{
+    ui->textEditWarning->setAccessibleName(text) ;
+}
+
+void WarningYesNo::setFocusOnYes()
+{
+    ui->buttonBox->button(QDialogButtonBox::Yes)->setFocus() ;
+}
+
+void WarningYesNo::setButtonDescriptions(QString yesdescription, QString nodescription)
+{
+    ui->buttonBox->button(QDialogButtonBox::Yes)->setAccessibleDescription(yesdescription) ;
+    ui->buttonBox->button(QDialogButtonBox::No)->setAccessibleDescription(nodescription) ;
 }
 
 void WarningYesNo::setCheckBox(QString text, bool checked)

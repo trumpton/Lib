@@ -1,5 +1,6 @@
 #include "oauth2.h"
 #include "ui_oauth2.h"
+#include "dialogfocus.h"
 #include "../Lib/network.h"
 
 #include <QUrl>
@@ -35,7 +36,7 @@ QString OAuth2::getAuthCode(QString url, QString completedurl)
     ui->web->setUrl(QUrl(url)) ;
     ui->web->page()->profile()->cookieStore()->deleteAllCookies() ;
     testurl = completedurl ;
-    this->exec() ;
+    execFocused(this) ;
     return authcode ;
 }
 

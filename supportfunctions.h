@@ -54,6 +54,12 @@ bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString
 bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString yestext, QChar yeskey, QString notext, QChar nokey, QString checktext, bool checkdefault, bool &checked) ;
 bool warningOkDialog(QWidget *parent, QString title, QString message, bool iserror=false, bool beep=true) ;
 bool errorOkDialog(QWidget *parent, QString title, QString message) ;
+// An error message, as QMessageBox::critical with its OK button, run with the focus handling (dialogfocus.h)
+void criticalDialog(QWidget *parent, QString title, QString message) ;
+// A question that must be answered on purpose: the focus starts on the Yes button (so Space answers it), Enter accepts and
+// Escape cancels.  spokenMessage is what the screen reader says for the message (empty: the message itself).
+bool deliberateYesNoDialog(QWidget *parent, QString title, QString message, QString spokenMessage, QString yestext, QChar yeskey,
+                           QString notext, QChar nokey, QString yesdescription = QString(), QString nodescription = QString()) ;
 QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok) ;
 
 // Manage logging

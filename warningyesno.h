@@ -19,6 +19,13 @@ public:
     void setText(QString text) ;
     void setButtons(QString yestext, QChar yeskey, QString notext, QChar nokey) ;
 
+    // The text the screen reader says for the message (the message on the screen may be longer)
+    void setSpokenText(QString text) ;
+    // The focus starts on the Yes button, so that Space presses it; Enter still accepts and Escape still cancels
+    void setFocusOnYes() ;
+    // A description for each button, which the screen reader reads with it (empty: none)
+    void setButtonDescriptions(QString yesdescription, QString nodescription) ;
+
     // Adds a checkbox to the left of the buttons, with its text and its starting state.  Without this call
     // there is no checkbox.
     void setCheckBox(QString text, bool checked) ;

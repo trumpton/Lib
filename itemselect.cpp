@@ -1,5 +1,6 @@
 #include "itemselect.h"
 #include "ui_itemselect.h"
+#include "dialogfocus.h"
 
 ItemSelect::ItemSelect(QWidget *parent) :
     QDialog(parent),
@@ -16,7 +17,7 @@ ItemSelect::~ItemSelect()
 int ItemSelect::exec()
 {
     ui->inputLineEdit->setFocus() ;
-    return QDialog::exec() ;
+    return execFocused(this) ;
 }
 
 void ItemSelect::setTitle(QString title, QString prompt)
