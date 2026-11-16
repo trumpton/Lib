@@ -43,7 +43,7 @@ static void forceForeground(QWidget *w)
 
 static bool traceOn = false ;
 static QString (*traceFolder)() = nullptr ;
-static bool guardOn = false ;
+static bool guardInstalled = false ;
 
 void setAccessibleTrace(bool on)
 {
@@ -159,16 +159,10 @@ static void keepFocusInModalDialog(QWidget *old, QWidget *now)
 static const int SETTLE_MS = 1500 ;
 static const int SETTLE_STEP_MS = 50 ;
 
-bool dialogFocusEnabled()
-{
-    return guardOn ;
-}
-
 int execFocused(QDialog *dlg)
 {
-    // Off: the dialog runs as it always did.  QDialog::exec, not exec, so that a dialog which overrides exec() (ItemSelect)
-    // does not come back here.
-    if (!guardOn) return dlg->QDialog::exec() ;
+    // QDialog::exec, not exec, so that a dialog which overrides exec() (ItemSelect) does not come back here.
+    installDialogFocusGuard() ;
 
     // A dialog with a Qt parent is nested under that window in the accessibility tree, so it becomes a window of its own.
     // Its parent does not delete it after this (the caller deletes it, as it always did).
@@ -221,7 +215,8 @@ static void keepModalInFront(QWindow *window)
 
 void installDialogFocusGuard()
 {
-    guardOn = true ;
+    if (guardInstalled) return ;
+    guardInstalled = true ;
     QObject::connect(qApp, &QApplication::focusChanged, keepFocusInModalDialog) ;
     QObject::connect(qGuiApp, &QGuiApplication::focusWindowChanged, keepModalInFront) ;
 }

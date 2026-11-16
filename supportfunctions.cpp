@@ -569,7 +569,7 @@ bool deliberateYesNoDialog(QWidget *parent, QString title, QString message, QStr
     yn.setText(message) ;
     if (!spokenMessage.isEmpty()) yn.setSpokenText(spokenMessage) ;
     yn.setButtons(yestext, yeskey, notext, nokey) ;
-    yn.setButtonDescriptions(yesdescription, nodescription) ;
+    yn.setButtonHint(yesdescription, nodescription) ;
     yn.setFocusOnYes() ;
     play(Query) ;
     return execFocused(&yn)==QDialog::Accepted ;

@@ -2,6 +2,7 @@
 #include "ui_warningyesno.h"
 
 #include <QPushButton>
+#include <QAbstractButton>
 #include <QStyle>
 
 WarningYesNo::WarningYesNo(QWidget *parent) :
@@ -18,6 +19,7 @@ WarningYesNo::WarningYesNo(QWidget *parent) :
     // Names for the buttons, so that a screen test can find them (the message box is textEditWarning, from the form)
     ui->buttonBox->button(QDialogButtonBox::Yes)->setObjectName("warningYes") ;
     ui->buttonBox->button(QDialogButtonBox::No)->setObjectName("warningNo") ;
+    applyButtonNames() ;
     yes = QChar('y') ;
     no = QChar('n') ;
 }
@@ -42,6 +44,7 @@ void WarningYesNo::keyPressEvent(QKeyEvent *event)
 void WarningYesNo::setText(QString text)
 {
     ui->textEditWarning->setText(text) ;
+    applyButtonNames() ;
 }
 
 void WarningYesNo::setButtons(QString yestext, QChar yeskey, QString notext, QChar nokey)
@@ -50,6 +53,42 @@ void WarningYesNo::setButtons(QString yestext, QChar yeskey, QString notext, QCh
     ui->buttonBox->button(QDialogButtonBox::No)->setText(notext) ;
     yes = yeskey.toLower() ;
     no = nokey.toLower() ;
+    applyButtonNames() ;
+}
+
+void WarningYesNo::applyButtonNames()
+{
+    QAbstractButton *y = ui->buttonBox->button(QDialogButtonBox::Yes) ;
+    QAbstractButton *n = ui->buttonBox->button(QDialogButtonBox::No) ;
+    if (speakDialogText) {
+        // The screen reader says the dialog's text for each button
+        QString message = ui->textEditWarning->toPlainText() ;
+        y->setAccessibleName(message) ;
+        n->setAccessibleName(message) ;
+    } else {
+        // The button's own text, unless a spoken text has been given
+        y->setAccessibleName(yespoken.isEmpty() ? y->text() : yespoken) ;
+        n->setAccessibleName(nopoken.isEmpty() ? n->text() : nopoken) ;
+    }
+}
+
+void WarningYesNo::setButtonSpokenText(QString yestext, QString notext)
+{
+    yespoken = yestext ;
+    nopoken = notext ;
+    applyButtonNames() ;
+}
+
+void WarningYesNo::setButtonHint(QString yeshint, QString nohint)
+{
+    ui->buttonBox->button(QDialogButtonBox::Yes)->setAccessibleDescription(yeshint) ;
+    ui->buttonBox->button(QDialogButtonBox::No)->setAccessibleDescription(nohint) ;
+}
+
+void WarningYesNo::setSpeakDialogText(bool on)
+{
+    speakDialogText = on ;
+    applyButtonNames() ;
 }
 
 void WarningYesNo::setSpokenText(QString text)
@@ -60,12 +99,6 @@ void WarningYesNo::setSpokenText(QString text)
 void WarningYesNo::setFocusOnYes()
 {
     ui->buttonBox->button(QDialogButtonBox::Yes)->setFocus() ;
-}
-
-void WarningYesNo::setButtonDescriptions(QString yesdescription, QString nodescription)
-{
-    ui->buttonBox->button(QDialogButtonBox::Yes)->setAccessibleDescription(yesdescription) ;
-    ui->buttonBox->button(QDialogButtonBox::No)->setAccessibleDescription(nodescription) ;
 }
 
 void WarningYesNo::setCheckBox(QString text, bool checked)
