@@ -2,12 +2,38 @@
 #include <QKeyEvent>
 #include <QCursor>
 #include <QApplication>
+#include <QPainter>
+#include <QStyleOptionFrame>
 #include "../Lib/alertsound.h"
 
 SafeLineEdit::SafeLineEdit(QWidget *parent) :
     QLineEdit(parent),
-    keepcursor(false)
+    keepcursor(false),
+    hintTaken(false)
 {
+}
+
+void SafeLineEdit::showEvent(QShowEvent *event)
+{
+    if (!hintTaken) {
+        hintTaken = true ;
+        hintText = placeholderText() ;
+        QLineEdit::setPlaceholderText(QString()) ;
+    }
+    QLineEdit::showEvent(event) ;
+}
+
+void SafeLineEdit::paintEvent(QPaintEvent *event)
+{
+    QLineEdit::paintEvent(event) ;
+    if (text().isEmpty() && !hintText.isEmpty()) {
+        QStyleOptionFrame option ;
+        initStyleOption(&option) ;
+        QRect r = style()->subElementRect(QStyle::SE_LineEditContents, &option, this) ;
+        QPainter painter(this) ;
+        painter.setPen(palette().color(QPalette::PlaceholderText)) ;
+        painter.drawText(r.adjusted(3, 0, -3, 0), Qt::AlignLeft | Qt::AlignVCenter, hintText) ;
+    }
 }
 
 void SafeLineEdit::preloadText(const QString &text)

@@ -19,6 +19,14 @@ public:
 private:
     bool keepcursor ;       // The next focus-in keeps the cursor where it is, not at the start.  Set by preloadText and focusAtEnd
 
+    // The hint text (the placeholder) is drawn here, not by Qt: Qt reports the placeholder to the screen reader as the field's
+    // description, so it was read with every empty field.  The hint is taken from the placeholder when the field is first shown.
+    QString hintText ;
+    bool hintTaken ;
+
+    void showEvent(QShowEvent *event) override ;
+    void paintEvent(QPaintEvent *event) override ;
+
     void keyPressEvent(QKeyEvent *event) ;
     void focusInEvent ( QFocusEvent *event) ;
     void focusOutEvent ( QFocusEvent *event) ;
