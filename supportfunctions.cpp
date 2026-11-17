@@ -1,4 +1,5 @@
 #include "supportfunctions.h"
+#include <QTimeZone>
 #include <QtGlobal>
 #include <QString>
 #include <QStringList>
@@ -215,7 +216,7 @@ bool backupFile(QString& path, QString& filename)
 QDateTime& isoStringToDateTime(QString str)
 {
     static QDateTime t ;
-    t.setTimeSpec(Qt::UTC) ;
+    t.setTimeZone(QTimeZone::utc()) ;
     t = QDateTime::fromString(str, Qt::ISODate) ;
     return t ;
 }
@@ -223,7 +224,7 @@ QDateTime& isoStringToDateTime(QString str)
 QString& dateTimeToIsoString(QDateTime &t)
 {
     static QString response ;
-    response = t.toTimeSpec(Qt::UTC).toString(Qt::ISODate) ;
+    response = t.toTimeZone(QTimeZone::utc()).toString(Qt::ISODate) ;
     return response ;
 }
 
@@ -232,7 +233,7 @@ QString& nowToIsoString()
 {
     static QString response ;
     QDateTime t = QDateTime::currentDateTime() ;
-    QDateTime z = t.toTimeSpec(Qt::UTC) ;
+    QDateTime z = t.toTimeZone(QTimeZone::utc()) ;
     response = z.toString(Qt::ISODate) ;
     return response ;
 }
@@ -241,7 +242,7 @@ QString& dateTimeStringToZulu(QString str)
 {
     static QString zulu ;
     QDateTime t = QDateTime::fromString(str, Qt::ISODate) ;
-    QDateTime z = t.toTimeSpec(Qt::UTC) ;
+    QDateTime z = t.toTimeZone(QTimeZone::utc()) ;
     zulu = z.toString(Qt::ISODate) ;
     return zulu ;
 }
