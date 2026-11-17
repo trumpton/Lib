@@ -12,7 +12,11 @@
 #include <QProcess>
 #include <QEventLoop>
 #include <QTextCodec>
-#include <QInputDialog>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QLabel>
+#include <QVBoxLayout>
+#include "safelineedit.h"
 
 #include "warningyesno.h"
 #include "warningok.h"
@@ -542,17 +546,31 @@ bool errorOkDialog(QWidget *parent, QString title, QString message)
     return warningOkDialog(parent, title, message, true) ;
 }
 
-QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok)
+QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok,
+                    QString accessibleName, QString accessibleDescription)
 {
     play(Query) ;
-    QInputDialog dialog(parent) ;
+    QDialog dialog(parent) ;
     dialog.setWindowTitle(title) ;
-    dialog.setLabelText(prompt) ;
-    dialog.setTextEchoMode(echo) ;
-    dialog.setTextValue(defaulttext) ;
+    QVBoxLayout *layout = new QVBoxLayout(&dialog) ;
+    QLabel *label = new QLabel(prompt, &dialog) ;
+    layout->addWidget(label) ;
+    SafeLineEdit *edit = new SafeLineEdit(&dialog) ;
+    edit->setEchoMode(echo) ;
+    edit->setAccessibleName(accessibleName.isEmpty() ? prompt : accessibleName) ;
+    if (!accessibleDescription.isEmpty()) edit->setAccessibleDescription(accessibleDescription) ;
+    label->setBuddy(edit) ;
+    // The text is shown with the cursor at the end and nothing selected, so a key typed adds to it
+    edit->preloadText(defaulttext) ;
+    layout->addWidget(edit) ;
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog) ;
+    layout->addWidget(buttons) ;
+    QObject::connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept) ;
+    QObject::connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject) ;
+    QObject::connect(edit, &QLineEdit::returnPressed, &dialog, &QDialog::accept) ;
     bool accepted = execFocused(&dialog)==QDialog::Accepted ;
     if (ok) *ok = accepted ;
-    return accepted ? dialog.textValue() : QString() ;
+    return accepted ? edit->text() : QString() ;
 }
 
 void criticalDialog(QWidget *parent, QString title, QString message)

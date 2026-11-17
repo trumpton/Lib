@@ -60,7 +60,10 @@ void criticalDialog(QWidget *parent, QString title, QString message) ;
 // Escape cancels.  spokenMessage is what the screen reader says for the message (empty: the message itself).
 bool deliberateYesNoDialog(QWidget *parent, QString title, QString message, QString spokenMessage, QString yestext, QChar yeskey,
                            QString notext, QChar nokey, QString yesdescription = QString(), QString nodescription = QString()) ;
-QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok) ;
+// A single line entry, with OK and Cancel.  The entry is the Lib line edit: the text is not selected, the cursor is at the end, and
+// typing does not replace a selection.  accessibleName is the prompt when it is empty.
+QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok,
+                    QString accessibleName = QString(), QString accessibleDescription = QString()) ;
 
 // Manage logging
 QString& getLog() ;
