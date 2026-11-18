@@ -15,7 +15,9 @@
 #include <QTextCodec>
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QLabel>
+#include "alabel.h"
+#include "amessagebox.h"
+#include "adialogbuttonbox.h"
 #include <QVBoxLayout>
 #include "safelineedit.h"
 
@@ -554,7 +556,7 @@ QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::E
     QDialog dialog(parent) ;
     dialog.setWindowTitle(title) ;
     QVBoxLayout *layout = new QVBoxLayout(&dialog) ;
-    QLabel *label = new QLabel(prompt, &dialog) ;
+    ALabel *label = new ALabel(prompt, &dialog) ;
     layout->addWidget(label) ;
     SafeLineEdit *edit = new SafeLineEdit(&dialog) ;
     edit->setEchoMode(echo) ;
@@ -564,7 +566,7 @@ QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::E
     // The text is shown with the cursor at the end and nothing selected, so a key typed adds to it
     edit->preloadText(defaulttext) ;
     layout->addWidget(edit) ;
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog) ;
+    ADialogButtonBox *buttons = new ADialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog) ;
     layout->addWidget(buttons) ;
     QObject::connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept) ;
     QObject::connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject) ;
@@ -576,7 +578,7 @@ QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::E
 
 void criticalDialog(QWidget *parent, QString title, QString message)
 {
-    QMessageBox box(QMessageBox::Critical, title, message, QMessageBox::Ok, parent) ;
+    AMessageBox box(QMessageBox::Critical, title, message, QMessageBox::Ok, parent) ;
     execFocused(&box) ;
 }
 

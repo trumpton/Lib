@@ -19,7 +19,7 @@
   <property name="accessibleDescription">
    <string>Search</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
+  <widget class="ADialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -59,6 +59,11 @@
   </widget>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>ADialogButtonBox</class>
+   <extends>QDialogButtonBox</extends>
+   <header>../Lib/adialogbuttonbox.h</header>
+  </customwidget>
   <customwidget>
    <class>SafeListView</class>
    <extends>QListView</extends>

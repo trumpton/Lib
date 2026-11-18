@@ -46,7 +46,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QLabel" name="icon">
+        <widget class="ALabel" name="icon">
          <property name="minimumSize">
           <size>
            <width>64</width>
@@ -80,7 +80,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QTextEdit" name="textEditWarning">
+      <widget class="SafeTextEdit" name="textEditWarning">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
@@ -128,7 +128,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+    <widget class="ADialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -140,6 +140,23 @@
   </layout>
  </widget>
  <resources/>
+ <customwidgets>
+  <customwidget>
+   <class>ADialogButtonBox</class>
+   <extends>QDialogButtonBox</extends>
+   <header>../Lib/adialogbuttonbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ALabel</class>
+   <extends>QLabel</extends>
+   <header>../Lib/alabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SafeTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>../Lib/safetextedit.h</header>
+  </customwidget>
+ </customwidgets>
  <connections>
   <connection>
    <sender>buttonBox</sender>

@@ -4,12 +4,12 @@
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QIcon>
-#include <QLabel>
+#include "alabel.h"
+#include "apushbutton.h"
+#include "safetextedit.h"
 #include <QSizePolicy>
-#include <QPushButton>
 #include <QStyle>
 #include <QTextDocument>
-#include <QTextEdit>
 #include <cmath>
 #include <QVBoxLayout>
 
@@ -24,12 +24,12 @@ WarningChoice::WarningChoice(QWidget *parent) :
     QHBoxLayout *top = new QHBoxLayout() ;
     QStyle *s = QApplication::style() ;
     int sz = s->pixelMetric(QStyle::PM_MessageBoxIconSize) ;
-    QLabel *icon = new QLabel(this) ;
+    ALabel *icon = new ALabel(this) ;
     icon->setPixmap(s->standardIcon(QStyle::SP_MessageBoxQuestion).pixmap(sz,sz)) ;
     icon->setAlignment(Qt::AlignTop) ;
     top->addWidget(icon) ;
 
-    textWarning = new QTextEdit(this) ;
+    textWarning = new SafeTextEdit(this) ;
     textWarning->setFrameShape(QFrame::NoFrame) ;
     textWarning->setFrameShadow(QFrame::Plain) ;
     textWarning->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff) ;
@@ -60,13 +60,13 @@ int WarningChoice::addChoice(QString label, QChar key, QString description)
 
     // A square button showing the letter, and the label and description to its right, on two lines
     int square = fontMetrics().height() * 2 + 8 ;
-    QPushButton *button = new QPushButton(QString(letter).toUpper(), this) ;
+    APushButton *button = new APushButton(QString(letter).toUpper(), this) ;
     button->setFixedSize(square, square) ;
     button->setAccessibleName(label) ;
     button->setAccessibleDescription(QString("%1. Press %2.").arg(description).arg(letter)) ;
-    connect(button, &QPushButton::clicked, this, [this, index]() { chooseIndex(index) ; }) ;
+    connect(button, &APushButton::clicked, this, [this, index]() { chooseIndex(index) ; }) ;
 
-    QLabel *details = new QLabel(label + "\n" + description, this) ;
+    ALabel *details = new ALabel(label + "\n" + description, this) ;
     details->setAlignment(Qt::AlignLeft|Qt::AlignVCenter) ;
 
     QHBoxLayout *row = new QHBoxLayout() ;

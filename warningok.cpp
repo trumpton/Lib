@@ -23,5 +23,5 @@ WarningOk::~WarningOk()
 
 void WarningOk::setText(QString text)
 {
-    ui->textEditWarning->setText(text) ;
+    ui->textEditWarning->setPlainText(text) ;
 }

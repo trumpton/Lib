@@ -243,7 +243,8 @@ public:
 // The accessibility factory: the label interface for every label
 static QAccessibleInterface *speechFactory(const QString &classname, QObject *object)
 {
-    if (classname==QLatin1String("QLabel") && qobject_cast<QWidget *>(object))
+    // Any label, including the A-prefixed labels (ALabel), which are QLabels
+    if (qobject_cast<QLabel *>(object))
         return new SpeechHiddenLabel(qobject_cast<QWidget *>(object)) ;
     return nullptr ;
 }

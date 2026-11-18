@@ -29,7 +29,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="ALabel" name="label">
        <property name="text">
         <string>Select Item</string>
        </property>
@@ -45,7 +45,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+    <widget class="ADialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -57,6 +57,16 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>ADialogButtonBox</class>
+   <extends>QDialogButtonBox</extends>
+   <header>../Lib/adialogbuttonbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ALabel</class>
+   <extends>QLabel</extends>
+   <header>../Lib/alabel.h</header>
+  </customwidget>
   <customwidget>
    <class>LineEditNavigator</class>
    <extends>QLineEdit</extends>

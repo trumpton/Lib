@@ -43,7 +43,7 @@ void WarningYesNo::keyPressEvent(QKeyEvent *event)
 
 void WarningYesNo::setText(QString text)
 {
-    ui->textEditWarning->setText(text) ;
+    ui->textEditWarning->setPlainText(text) ;
     applyButtonNames() ;
 }
 

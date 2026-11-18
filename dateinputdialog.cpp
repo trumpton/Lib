@@ -1,6 +1,7 @@
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QLabel>
+#include "alabel.h"
+#include "adialogbuttonbox.h"
 #include <QTime>
 #include <QVBoxLayout>
 #include "dateinputdialog.h"
@@ -20,7 +21,7 @@ QDate dateInputDialog(QWidget *parent, QString title, QString prompt, QDate defa
     QVBoxLayout *layout = new QVBoxLayout(&dialog) ;
 
     // The prompt is the field's label, so a screen reader reads it with the field
-    QLabel *label = new QLabel(prompt, &dialog) ;
+    ALabel *label = new ALabel(prompt, &dialog) ;
     label->setWordWrap(true) ;
     layout->addWidget(label) ;
 
@@ -34,7 +35,7 @@ QDate dateInputDialog(QWidget *parent, QString title, QString prompt, QDate defa
     edit->setAccessibleDescription("Up and Down change a part, or type a number") ;
     layout->addWidget(edit) ;
 
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog) ;
+    ADialogButtonBox *buttons = new ADialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog) ;
     layout->addWidget(buttons) ;
 
     QObject::connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept) ;

@@ -6,8 +6,8 @@
 #include <QChar>
 #include <QList>
 
-class QTextEdit ;
-class QPushButton ;
+class SafeTextEdit ;
+class APushButton ;
 class QVBoxLayout ;
 
 // A dialog that asks the user to choose one of several actions.  It shows its question as WarningOk and WarningYesNo do:
@@ -35,9 +35,9 @@ public:
     int choose() ;
 
 private:
-    QTextEdit *textWarning ;
+    SafeTextEdit *textWarning ;
     QVBoxLayout *layout ;
-    QList<QPushButton *> buttons ;
+    QList<APushButton *> buttons ;
     QList<QChar> keys ;
     int defaultindex ;
     int chosen ;
