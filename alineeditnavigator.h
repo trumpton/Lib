@@ -7,7 +7,7 @@
 #include <QString>
 #include <QStringList>
 
-class LineEditNavigator : public QLineEdit
+class ALineEditNavigator : public QLineEdit
 {
     Q_OBJECT
 private:
@@ -19,8 +19,8 @@ private:
     void update() ;
 
 public:
-    explicit LineEditNavigator(QWidget *parent = 0);
-    ~LineEditNavigator() ;
+    explicit ALineEditNavigator(QWidget *parent = 0);
+    ~ALineEditNavigator() ;
 
     void clear() ;
     int size() ;

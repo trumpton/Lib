@@ -36,7 +36,7 @@
       </widget>
      </item>
      <item>
-      <widget class="LineEditNavigator" name="inputLineEdit">
+      <widget class="ALineEditNavigator" name="inputLineEdit">
        <property name="accessibleName">
         <string>Item</string>
        </property>
@@ -68,9 +68,9 @@
    <header>../Lib/alabel.h</header>
   </customwidget>
   <customwidget>
-   <class>LineEditNavigator</class>
+   <class>ALineEditNavigator</class>
    <extends>QLineEdit</extends>
-   <header>../Lib/lineeditnavigator.h</header>
+   <header>../Lib/alineeditnavigator.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

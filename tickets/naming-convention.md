@@ -9,7 +9,7 @@ The Lib names do not follow one rule:
 - Shims of Qt classes have the Qt name with an A in front: `ALabel`, `APushButton`, `ACheckBox` and the others, in files
   such as `alabel.h`. These were added so that one change to a control applies everywhere.
 - Some Lib classes keep another prefix or no prefix: `AccessibleDateTimeEdit`, `AccessibleDateRangeEdit`,
-  `AccessibleStringListModel`, `LineEditNavigator`, `WarningYesNo`, `WarningOk`, `WarningChoice`, `Search`, `ItemSelect`,
+  `AccessibleStringListModel`, `WarningYesNo`, `WarningOk`, `WarningChoice`, `Search`, `ItemSelect`,
   `Encryption`. The Safe prefix was replaced by the A prefix (`SafeLineEdit` is now `ALineEdit`, and its file `alineedit.h`),
   in the Lib and in ContactManager, EasyNotepad and ParseWeb.
 - Functions are named by what they do, not by the Qt class they replace: `inputDialog`, `warningOkDialog`,

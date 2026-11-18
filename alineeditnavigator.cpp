@@ -1,38 +1,38 @@
-#include "lineeditnavigator.h"
+#include "alineeditnavigator.h"
 #include <QDir>
 #include <QDate>
 #include <QApplication>
 #include <QInputDialog>
 #include "../Lib/alertsound.h"
 
-LineEditNavigator::LineEditNavigator(QWidget *parent) :
+ALineEditNavigator::ALineEditNavigator(QWidget *parent) :
     QLineEdit(parent)
 {
     clear() ;
 }
 
-LineEditNavigator::~LineEditNavigator()
+ALineEditNavigator::~ALineEditNavigator()
 {
 }
 
-void LineEditNavigator::clear()
+void ALineEditNavigator::clear()
 {
     entries.clear() ;
     arguments.clear() ;
     ix=-1 ;
 }
 
-void LineEditNavigator::selectItem(QString item)
+void ALineEditNavigator::selectItem(QString item)
 {
     setCurrentIndex(findText(item)) ;
 }
 
-void LineEditNavigator::selectData(QString data)
+void ALineEditNavigator::selectData(QString data)
 {
     setCurrentIndex(findData(data)) ;
 }
 
-int LineEditNavigator::findData(QString data)
+int ALineEditNavigator::findData(QString data)
 {
     for (int i=0, sz=arguments.size(); i<sz; i++) {
         if (data.compare(arguments.at(i))==0) return i ;
@@ -41,7 +41,7 @@ int LineEditNavigator::findData(QString data)
 }
 
 
-int LineEditNavigator::findText(QString item)
+int ALineEditNavigator::findText(QString item)
 {
     item=item.toLower() ;
     for (int i=0, sz=entries.size(); i<sz; i++) {
@@ -51,7 +51,7 @@ int LineEditNavigator::findText(QString item)
 }
 
 
-void LineEditNavigator::setCurrentIndex(int i)
+void ALineEditNavigator::setCurrentIndex(int i)
 {
     if (entries.size()==0 || i<0) ix=-1 ;
     else if (i>=entries.size()) ix=entries.size()-1 ;
@@ -66,7 +66,7 @@ void LineEditNavigator::setCurrentIndex(int i)
     this->setCursorPosition(0) ;
 }
 
-void LineEditNavigator::addItem(QString entry, QString data, int i)
+void ALineEditNavigator::addItem(QString entry, QString data, int i)
 {
     if (i>=0 && i<entry.size()) {
         entries.insert(i, entry) ;
@@ -92,36 +92,36 @@ void LineEditNavigator::addItem(QString entry, QString data, int i)
     }
 }
 
-int LineEditNavigator::currentIndex()
+int ALineEditNavigator::currentIndex()
 {
     return ix ;
 }
 
-int LineEditNavigator::size()
+int ALineEditNavigator::size()
 {
     return entries.size() ;
 }
 
-const QString& LineEditNavigator::itemText(int i)
+const QString& ALineEditNavigator::itemText(int i)
 {
     if (i<0 || i>entries.size()) selectionText="" ;
     else selectionText = entries.at(i) ;
     return selectionText ;
 }
 
-const QString& LineEditNavigator::currentText()
+const QString& ALineEditNavigator::currentText()
 {
     return itemText(ix) ;
 }
 
-const QString& LineEditNavigator::itemData(int i)
+const QString& ALineEditNavigator::itemData(int i)
 {
     if (i<0 || i>=arguments.size()) dataText="" ;
     else dataText = arguments.at(i) ;
     return dataText ;
 }
 
-const QString& LineEditNavigator::currentData()
+const QString& ALineEditNavigator::currentData()
 {
     return itemData(ix) ;
 }
@@ -137,7 +137,7 @@ static QChar punctuationKey(QKeyEvent *event)
     return c ;
 }
 
-void LineEditNavigator::keyPressEvent(QKeyEvent *event)
+void ALineEditNavigator::keyPressEvent(QKeyEvent *event)
 {
     QString txt="" ;
     bool updated=false ;
@@ -206,7 +206,7 @@ void LineEditNavigator::keyPressEvent(QKeyEvent *event)
 }
 
 
-void LineEditNavigator::focusInEvent ( QFocusEvent * event)
+void ALineEditNavigator::focusInEvent ( QFocusEvent * event)
 {
     QLineEdit::focusInEvent(event) ;
     this->setCursorPosition(0) ;
