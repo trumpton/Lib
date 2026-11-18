@@ -71,9 +71,9 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     setModal(true) ;
     buttonView->setAccessibleName(runningText) ;
     buttonView->setText(runningText) ;
-    // Shown active, with the button focused, so that the screen reader follows the window while the bar moves
+    // EXPERIMENT (progress-tone ticket, candidate 1): shown without activation, as at aa8811a.  Set showFocused(this) to restore.
     buttonView->setFocus() ;
-    showFocused(this) ;
+    show() ;
 }
 
 void AProgressInfo::setCompleteValue(int value)
