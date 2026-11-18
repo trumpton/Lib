@@ -515,7 +515,7 @@ bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString
     yn.setText(message) ;
     yn.setButtons(yestext, yeskey, notext, nokey);
     play(Query) ;
-    return yn.exec()==QDialog::Accepted ;
+    return execFocused(&yn)==QDialog::Accepted ;
 }
 
 bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString yestext, QChar yeskey, QString notext, QChar nokey, QString checktext, bool checkdefault, bool &checked)
