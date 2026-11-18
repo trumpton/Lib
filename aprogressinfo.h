@@ -11,8 +11,8 @@ namespace Ui {
 class AProgressInfo ;
 }
 
-// AProgressInfo: a progress window for a long operation, with a log of what has been done (updateStatusReport), a bar
-// (progressBar) and one button (pushButton).  While the operation runs the button is Abort: pressing it sets isAborted(), which
+// AProgressInfo: a progress window for a long operation, with a log of what has been done, a bar and one button.  The
+// widgets are private: a subclass uses logLine, setProgress, setPartNames, startProgress and finishProgress.  While the operation runs the button is Abort: pressing it sets isAborted(), which
 // the operation checks as it goes.  finishProgress() ends the report: it writes the summary, sets the bar to 100%, plays the
 // completion sound, and changes the button to its finished text (OK by default).  Then the button closes the window.
 //
@@ -47,9 +47,11 @@ public:
     virtual bool isAborted() const ;
 
 protected:
-    ATextEdit *updateStatusReport ;
-    AProgressBar *progressBar ;
-    APushButton *pushButton ;
+    // Writes a line to the log.  The log is read by the screen reader as it is written, so only what the user needs is written.
+    void logLine(const QString &line) ;
+
+    // The accessible names of the log and of the bar, for a subclass whose window has its own (for example "Update Progress").
+    void setPartNames(const QString &logName, const QString &barName) ;
 
     // The button press: Abort while the operation runs, and closes the window once it has finished.  A subclass that keeps its
     // own state overrides this.
@@ -59,6 +61,10 @@ private slots:
     void on_pushButton_clicked() ;
 
 private:
+    // The widgets belong to the dialog: a subclass uses the functions above, not the widgets
+    ATextEdit *logView ;
+    AProgressBar *barView ;
+    APushButton *buttonView ;
     Ui::AProgressInfo *ui ;
     int complete ;
     bool running ;

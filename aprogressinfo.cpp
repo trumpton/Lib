@@ -15,19 +15,30 @@ AProgressInfo::AProgressInfo(QWidget *parent) :
     ui(new Ui::AProgressInfo)
 {
     ui->setupUi(this) ;
-    updateStatusReport = ui->updateStatusReport ;
-    progressBar = ui->progressBar ;
-    pushButton = ui->pushButton ;
+    logView = ui->updateStatusReport ;
+    barView = ui->progressBar ;
+    buttonView = ui->pushButton ;
     complete = 100 ;
     running = false ;
     aborted = false ;
     finished = false ;
-    progressBar->setRange(0, complete) ;
+    barView->setRange(0, complete) ;
 }
 
 AProgressInfo::~AProgressInfo()
 {
     delete ui ;
+}
+
+void AProgressInfo::logLine(const QString &line)
+{
+    if (!line.isEmpty()) logView->appendPlainText(line) ;
+}
+
+void AProgressInfo::setPartNames(const QString &logName, const QString &barName)
+{
+    logView->setAccessibleName(logName) ;
+    barView->setAccessibleName(barName) ;
 }
 
 void AProgressInfo::startProgress(const QString &task, const QString &runningText)
@@ -39,19 +50,19 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     running = true ;
     aborted = false ;
     finished = false ;
-    progressBar->setRange(0, complete) ;
-    progressBar->setValue(0) ;
+    barView->setRange(0, complete) ;
+    barView->setValue(0) ;
     setModal(true) ;
-    pushButton->setAccessibleName(runningText) ;
-    pushButton->setText(runningText) ;
+    buttonView->setAccessibleName(runningText) ;
+    buttonView->setText(runningText) ;
     show() ;
-    pushButton->setFocus() ;
+    buttonView->setFocus() ;
 }
 
 void AProgressInfo::setCompleteValue(int value)
 {
     complete = value ;
-    progressBar->setRange(0, complete) ;
+    barView->setRange(0, complete) ;
 }
 
 int AProgressInfo::completeValue() const
@@ -61,27 +72,27 @@ int AProgressInfo::completeValue() const
 
 void AProgressInfo::setProgress(int value)
 {
-    progressBar->setValue(qBound(0, value, complete)) ;
+    barView->setValue(qBound(0, value, complete)) ;
     QCoreApplication::processEvents() ;
 }
 
 void AProgressInfo::reportProgress(int value, const QString &line)
 {
-    if (!line.isEmpty()) updateStatusReport->appendPlainText(line) ;
+    logLine(line) ;
     setProgress(value) ;
 }
 
 void AProgressInfo::finishProgress(const QString &summary, const QString &buttonText)
 {
-    if (!summary.isEmpty()) updateStatusReport->appendPlainText(summary) ;
-    progressBar->setValue(complete) ;
+    logLine(summary) ;
+    barView->setValue(complete) ;
     QCoreApplication::processEvents() ;
     play(Query) ;
     running = false ;
     finished = true ;
-    pushButton->setAccessibleName(buttonText) ;
-    pushButton->setText(buttonText) ;
-    pushButton->setFocus() ;
+    buttonView->setAccessibleName(buttonText) ;
+    buttonView->setText(buttonText) ;
+    buttonView->setFocus() ;
     execFocused(this) ;
 }
 
