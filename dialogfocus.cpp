@@ -47,14 +47,39 @@ static bool traceOn = false ;
 static QString (*traceFolder)() = nullptr ;
 static bool guardInstalled = false ;
 
+// Each value change that Qt sends to the accessibility system is traced, with its object and value: a progress bar's change
+// is one of these, and the screen reader gives a progress tone for it.  The handler passes every event on, as before.
+static QAccessible::UpdateHandler previousUpdateHandler = nullptr ;
+static bool updateHandlerInstalled = false ;
+
+static void traceAccessibilityUpdate(QAccessibleEvent *event)
+{
+    if (traceOn && event && event->type()==QAccessible::ValueChanged) {
+        QObject *object = event->object() ;
+        QString value ;
+        if (auto *change = dynamic_cast<QAccessibleValueChangeEvent *>(event)) value = change->value().toString() ;
+        accessibleTrace(QString("event ValueChanged for %1 value %2").arg(object ? QString(object->metaObject()->className()) : QString("none"), value)) ;
+    }
+    if (previousUpdateHandler) previousUpdateHandler(event) ;
+}
+
 void setAccessibleTrace(bool on)
 {
     traceOn = on ;
+    if (on && !updateHandlerInstalled) {
+        previousUpdateHandler = QAccessible::installUpdateHandler(&traceAccessibilityUpdate) ;
+        updateHandlerInstalled = true ;
+    }
 }
 
 void setAccessibleTraceFolder(QString (*folder)())
 {
     traceFolder = folder ;
+}
+
+bool accessibleTraceIsOn()
+{
+    return traceOn ;
 }
 
 void accessibleTrace(const QString &line)

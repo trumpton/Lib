@@ -28,5 +28,7 @@ void hideLabelFromSpeech(QWidget *label) ;
 void setAccessibleTrace(bool on) ;
 void setAccessibleTraceFolder(QString (*folder)()) ;
 void accessibleTrace(const QString &line) ;
+// True while the trace is on, so that a trace line is only built when it will be written
+bool accessibleTraceIsOn() ;
 
 #endif // DIALOGFOCUS_H
