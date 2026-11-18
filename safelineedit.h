@@ -27,9 +27,12 @@ private:
     void showEvent(QShowEvent *event) override ;
     void paintEvent(QPaintEvent *event) override ;
 
-    void keyPressEvent(QKeyEvent *event) ;
     void focusInEvent ( QFocusEvent *event) ;
     void focusOutEvent ( QFocusEvent *event) ;
+
+protected:
+    // A subclass that keeps its own keys calls this for the rest (its keys are not blocked by the selection)
+    void keyPressEvent(QKeyEvent *event) ;
 
 signals:
 
