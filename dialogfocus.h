@@ -17,6 +17,12 @@ void installDialogFocusGuard() ;
 // Runs a modal dialog, in place of exec().  The caller still deletes the dialog if it created it with new.
 int execFocused(QDialog *dlg) ;
 
+// A label whose text is already part of its field's name (for example, "From" with the date box after it) is still shown on
+// the screen, but is marked invisible in the accessibility tree, so the screen reader does not read it with the dialog.
+// Only labels passed to this function are changed. installDialogFocusGuard() installs the factory that does it.
+class QWidget ;
+void hideLabelFromSpeech(QWidget *label) ;
+
 // Tracing, for finding a fault with a screen reader.  Off until setAccessibleTrace(true).  Each step is written to
 // accessibility-debug.txt in the folder given by setAccessibleTraceFolder (if a folder function is set), and to the debug output.
 void setAccessibleTrace(bool on) ;

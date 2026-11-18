@@ -1,6 +1,8 @@
 #include "dialogfocus.h"
 
 #include <QAccessible>
+#include <QAccessibleWidget>
+#include <QLabel>
 #include <QApplication>
 #include <QDateTime>
 #include <QDebug>
@@ -213,10 +215,49 @@ static void keepModalInFront(QWindow *window)
     }
 }
 
+// A label: the same as its widget, except that a label marked by hideLabelFromSpeech is invisible in the tree.  The mark is read
+// each time the state is asked for, not when the interface is made, because Qt makes the interface while the dialog is built
+// and keeps it, and a label can be marked after that.
+class SpeechHiddenLabel : public QAccessibleWidget
+{
+public:
+    // A label is static text, and its name is its text, as Qt's own label interface gives it
+    explicit SpeechHiddenLabel(QWidget *widget) : QAccessibleWidget(widget, QAccessible::StaticText) {}
+    QString text(QAccessible::Text t) const override {
+        if (t==QAccessible::Name) {
+            if (QLabel *label = qobject_cast<QLabel *>(widget())) {
+                QString name = label->text() ;
+                name.remove(QLatin1Char('&')) ;
+                return name ;
+            }
+        }
+        return QAccessibleWidget::text(t) ;
+    }
+    QAccessible::State state() const override {
+        QAccessible::State s = QAccessibleWidget::state() ;
+        if (widget() && widget()->property("speechHidden").toBool()) s.invisible = true ;
+        return s ;
+    }
+};
+
+// The accessibility factory: the label interface for every label
+static QAccessibleInterface *speechFactory(const QString &classname, QObject *object)
+{
+    if (classname==QLatin1String("QLabel") && qobject_cast<QWidget *>(object))
+        return new SpeechHiddenLabel(qobject_cast<QWidget *>(object)) ;
+    return nullptr ;
+}
+
+void hideLabelFromSpeech(QWidget *label)
+{
+    if (label) label->setProperty("speechHidden", true) ;
+}
+
 void installDialogFocusGuard()
 {
     if (guardInstalled) return ;
     guardInstalled = true ;
+    QAccessible::installFactory(speechFactory) ;
     QObject::connect(qApp, &QApplication::focusChanged, keepFocusInModalDialog) ;
     QObject::connect(qGuiApp, &QGuiApplication::focusWindowChanged, keepModalInFront) ;
 }
