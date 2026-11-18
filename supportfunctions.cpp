@@ -19,7 +19,7 @@
 #include "amessagebox.h"
 #include "adialogbuttonbox.h"
 #include <QVBoxLayout>
-#include "safelineedit.h"
+#include "alineedit.h"
 
 #include "warningyesno.h"
 #include "warningok.h"
@@ -558,7 +558,7 @@ QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::E
     QVBoxLayout *layout = new QVBoxLayout(&dialog) ;
     ALabel *label = new ALabel(prompt, &dialog) ;
     layout->addWidget(label) ;
-    SafeLineEdit *edit = new SafeLineEdit(&dialog) ;
+    ALineEdit *edit = new ALineEdit(&dialog) ;
     edit->setEchoMode(echo) ;
     edit->setAccessibleName(accessibleName.isEmpty() ? prompt : accessibleName) ;
     if (!accessibleDescription.isEmpty()) edit->setAccessibleDescription(accessibleDescription) ;

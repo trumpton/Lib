@@ -30,7 +30,7 @@
       </widget>
      </item>
      <item>
-      <widget class="SafeLineEdit" name="lineEdit0">
+      <widget class="ALineEdit" name="lineEdit0">
        <property name="maxLength">
         <number>256</number>
        </property>
@@ -60,7 +60,7 @@
       </widget>
      </item>
      <item>
-      <widget class="SafeLineEdit" name="lineEdit1">
+      <widget class="ALineEdit" name="lineEdit1">
        <property name="maxLength">
         <number>256</number>
        </property>
@@ -90,7 +90,7 @@
       </widget>
      </item>
      <item>
-      <widget class="SafeLineEdit" name="lineEdit2">
+      <widget class="ALineEdit" name="lineEdit2">
        <property name="maxLength">
         <number>64</number>
        </property>
@@ -129,7 +129,7 @@
       </widget>
      </item>
      <item>
-      <widget class="SafeLineEdit" name="lineEdit3">
+      <widget class="ALineEdit" name="lineEdit3">
        <property name="maxLength">
         <number>64</number>
        </property>
@@ -199,9 +199,9 @@
    <header>../Lib/alabel.h</header>
   </customwidget>
   <customwidget>
-   <class>SafeLineEdit</class>
+   <class>ALineEdit</class>
    <extends>QLineEdit</extends>
-   <header>../Lib/safelineedit.h</header>
+   <header>../Lib/alineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

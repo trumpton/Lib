@@ -1,9 +1,9 @@
-#ifndef SAFELISTVIEW_H
-#define SAFELISTVIEW_H
+#ifndef ALISTVIEW_H
+#define ALISTVIEW_H
 
 #include <QListView>
 
-class SafeListView : public QListView
+class AListView : public QListView
 {
     Q_OBJECT
 
@@ -11,7 +11,7 @@ private:
     QModelIndex curridx ;
 
 public:
-    explicit SafeListView(QWidget *parent = 0);
+    explicit AListView(QWidget *parent = 0);
     void focusInEvent(QFocusEvent * e) ;
     void setCurrentIndex(const QModelIndex &idx) ;
     void layoutNow() ;     // Lays out the entries now, so that the scroll bar and the positions of the entries are current
@@ -24,4 +24,4 @@ public slots:
 
 };
 
-#endif // SAFELISTVIEW_H
+#endif // ALISTVIEW_H

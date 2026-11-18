@@ -35,7 +35,7 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="SafeListView" name="listSearchResults">
+  <widget class="AListView" name="listSearchResults">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -65,9 +65,9 @@
    <header>../Lib/adialogbuttonbox.h</header>
   </customwidget>
   <customwidget>
-   <class>SafeListView</class>
+   <class>AListView</class>
    <extends>QListView</extends>
-   <header>../Lib/safelistview.h</header>
+   <header>../Lib/alistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

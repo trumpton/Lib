@@ -1,28 +1,28 @@
-#include "safetextedit.h"
+#include "atextedit.h"
 #include <QKeyEvent>
 #include <QTextCursor>
 #include <QApplication>
 
 #include "../Lib/alertsound.h"
 
-SafeTextEdit::SafeTextEdit(QWidget *parent) :
+ATextEdit::ATextEdit(QWidget *parent) :
     QPlainTextEdit(parent)
 {
     setAutoHomeEnabled(true) ;
     setMouseEnabled(false) ;
 }
 
-void SafeTextEdit::setAutoHomeEnabled(bool state)
+void ATextEdit::setAutoHomeEnabled(bool state)
 {
     autohomeenabled=state ;
 }
 
-void SafeTextEdit::setMouseEnabled(bool state)
+void ATextEdit::setMouseEnabled(bool state)
 {
     setAttribute(Qt::WA_TransparentForMouseEvents, !state) ;
 }
 
-void SafeTextEdit::keyPressEvent(QKeyEvent *event)
+void ATextEdit::keyPressEvent(QKeyEvent *event)
 {
     bool allowed=true ;
     bool selected=false ;

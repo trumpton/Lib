@@ -6,7 +6,7 @@
 #include <QIcon>
 #include "alabel.h"
 #include "apushbutton.h"
-#include "safetextedit.h"
+#include "atextedit.h"
 #include <QSizePolicy>
 #include <QStyle>
 #include <QTextDocument>
@@ -29,7 +29,7 @@ WarningChoice::WarningChoice(QWidget *parent) :
     icon->setAlignment(Qt::AlignTop) ;
     top->addWidget(icon) ;
 
-    textWarning = new SafeTextEdit(this) ;
+    textWarning = new ATextEdit(this) ;
     textWarning->setFrameShape(QFrame::NoFrame) ;
     textWarning->setFrameShadow(QFrame::Plain) ;
     textWarning->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff) ;

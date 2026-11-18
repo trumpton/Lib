@@ -80,7 +80,7 @@
       </layout>
      </item>
      <item>
-      <widget class="SafeTextEdit" name="textEditWarning">
+      <widget class="ATextEdit" name="textEditWarning">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
@@ -152,9 +152,9 @@
    <header>../Lib/alabel.h</header>
   </customwidget>
   <customwidget>
-   <class>SafeTextEdit</class>
+   <class>ATextEdit</class>
    <extends>QPlainTextEdit</extends>
-   <header>../Lib/safetextedit.h</header>
+   <header>../Lib/atextedit.h</header>
   </customwidget>
  </customwidgets>
  <connections>

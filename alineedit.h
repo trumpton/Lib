@@ -1,13 +1,13 @@
-#ifndef SAFELINEEDIT_H
-#define SAFELINEEDIT_H
+#ifndef ALINEEDIT_H
+#define ALINEEDIT_H
 
 #include <QLineEdit>
 
-class SafeLineEdit : public QLineEdit
+class ALineEdit : public QLineEdit
 {
     Q_OBJECT
 public:
-    explicit SafeLineEdit(QWidget *parent = 0);
+    explicit ALineEdit(QWidget *parent = 0);
 
     // Sets the text, with the cursor at its end and nothing selected.  The cursor stays at the end when the field next gets the
     // focus, instead of moving to the start.
@@ -40,4 +40,4 @@ public slots:
 
 };
 
-#endif // SAFELINEEDIT_H
+#endif // ALINEEDIT_H

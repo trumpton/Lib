@@ -6,7 +6,7 @@
 #include <QChar>
 #include <QList>
 
-class SafeTextEdit ;
+class ATextEdit ;
 class APushButton ;
 class QVBoxLayout ;
 
@@ -35,7 +35,7 @@ public:
     int choose() ;
 
 private:
-    SafeTextEdit *textWarning ;
+    ATextEdit *textWarning ;
     QVBoxLayout *layout ;
     QList<APushButton *> buttons ;
     QList<QChar> keys ;

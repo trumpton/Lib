@@ -1,4 +1,4 @@
-#include "safelineedit.h"
+#include "alineedit.h"
 #include <QKeyEvent>
 #include <QCursor>
 #include <QApplication>
@@ -6,14 +6,14 @@
 #include <QStyleOptionFrame>
 #include "../Lib/alertsound.h"
 
-SafeLineEdit::SafeLineEdit(QWidget *parent) :
+ALineEdit::ALineEdit(QWidget *parent) :
     QLineEdit(parent),
     keepcursor(false),
     hintTaken(false)
 {
 }
 
-void SafeLineEdit::showEvent(QShowEvent *event)
+void ALineEdit::showEvent(QShowEvent *event)
 {
     if (!hintTaken) {
         hintTaken = true ;
@@ -23,7 +23,7 @@ void SafeLineEdit::showEvent(QShowEvent *event)
     QLineEdit::showEvent(event) ;
 }
 
-void SafeLineEdit::paintEvent(QPaintEvent *event)
+void ALineEdit::paintEvent(QPaintEvent *event)
 {
     QLineEdit::paintEvent(event) ;
     if (text().isEmpty() && !hintText.isEmpty()) {
@@ -36,7 +36,7 @@ void SafeLineEdit::paintEvent(QPaintEvent *event)
     }
 }
 
-void SafeLineEdit::preloadText(const QString &text)
+void ALineEdit::preloadText(const QString &text)
 {
     setText(text) ;
     deselect() ;
@@ -46,7 +46,7 @@ void SafeLineEdit::preloadText(const QString &text)
     keepcursor = !hasFocus() ;
 }
 
-void SafeLineEdit::focusAtEnd()
+void ALineEdit::focusAtEnd()
 {
     keepcursor = true ;
     setFocus() ;
@@ -60,7 +60,7 @@ void SafeLineEdit::focusAtEnd()
 }
 
 
-void SafeLineEdit::keyPressEvent(QKeyEvent *event)
+void ALineEdit::keyPressEvent(QKeyEvent *event)
 {
     bool allowed=true ;
     bool selected=false ;
@@ -88,7 +88,7 @@ void SafeLineEdit::keyPressEvent(QKeyEvent *event)
     QLineEdit::keyPressEvent(event);
 }
 
-void SafeLineEdit::focusInEvent ( QFocusEvent * event)
+void ALineEdit::focusInEvent ( QFocusEvent * event)
 {
     QLineEdit::focusInEvent(event) ;
     if (keepcursor) {
@@ -100,7 +100,7 @@ void SafeLineEdit::focusInEvent ( QFocusEvent * event)
     }
 }
 
-void SafeLineEdit::focusOutEvent ( QFocusEvent * event)
+void ALineEdit::focusOutEvent ( QFocusEvent * event)
 {
     // The cursor goes to the start on a later focus-in, unless it was set to the end again
     keepcursor = false ;

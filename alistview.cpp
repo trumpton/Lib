@@ -1,13 +1,13 @@
-#include "safelistview.h"
+#include "alistview.h"
 #include "supportfunctions.h"
 #include <QStringListModel>
 
-SafeListView::SafeListView(QWidget *parent) :
+AListView::AListView(QWidget *parent) :
     QListView(parent)
 {
 }
 
-void SafeListView::setCurrentIndex(const QModelIndex &idx)
+void AListView::setCurrentIndex(const QModelIndex &idx)
 {
     curridx = idx ;
     if (hasFocus()) {
@@ -20,13 +20,13 @@ void SafeListView::setCurrentIndex(const QModelIndex &idx)
     }
 }
 
-void SafeListView::layoutNow()
+void AListView::layoutNow()
 {
     // The entries are laid out after the model has changed, not at once, so this does it when they are needed now
     executeDelayedItemsLayout() ;
 }
 
-void SafeListView::focusInEvent(QFocusEvent * e)
+void AListView::focusInEvent(QFocusEvent * e)
 {    
     QListView::focusInEvent(e) ;
 
@@ -38,7 +38,7 @@ void SafeListView::focusInEvent(QFocusEvent * e)
     }
 }
 
-void SafeListView::scrollTo(const QModelIndex &index, QAbstractItemView::ScrollHint hint)
+void AListView::scrollTo(const QModelIndex &index, QAbstractItemView::ScrollHint hint)
 {
     // The view scrolls to other entries as it lays itself out, and to show a row, so only the current entry is kept here.  A
     // scroll to another entry does not change which entry is current.

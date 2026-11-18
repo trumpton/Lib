@@ -1,13 +1,13 @@
-#ifndef SAFETEXTEDIT_H
-#define SAFETEXTEDIT_H
+#ifndef ATEXTEDIT_H
+#define ATEXTEDIT_H
 
 #include <QPlainTextEdit>
 
-class SafeTextEdit : public QPlainTextEdit
+class ATextEdit : public QPlainTextEdit
 {
     Q_OBJECT
 public:
-    explicit SafeTextEdit(QWidget *parent = 0);
+    explicit ATextEdit(QWidget *parent = 0);
     void setAutoHomeEnabled(bool state) ;
     void setMouseEnabled(bool state) ;
 
@@ -22,4 +22,4 @@ public slots:
 
 };
 
-#endif // SAFETEXTEDIT_H
+#endif // ATEXTEDIT_H
