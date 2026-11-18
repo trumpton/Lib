@@ -17,6 +17,11 @@ void installDialogFocusGuard() ;
 // Runs a modal dialog, in place of exec().  The caller still deletes the dialog if it created it with new.
 int execFocused(QDialog *dlg) ;
 
+// Shows a window that stays open while the user works elsewhere, or while a long operation runs (a progress window), as its own
+// window, and makes it the active window with its focus control focused, as execFocused does.  The screen reader follows the
+// active window, so a progress window shown without this is not followed while it updates.
+void showFocused(QDialog *dlg) ;
+
 // A label whose text is already part of its field's name (for example, "From" with the date box after it) is still shown on
 // the screen, but is marked invisible in the accessibility tree, so the screen reader does not read it with the dialog.
 // Only labels passed to this function are changed. installDialogFocusGuard() installs the factory that does it.

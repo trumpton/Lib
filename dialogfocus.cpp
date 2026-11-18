@@ -198,6 +198,18 @@ static void keepFocusInModalDialog(QWidget *old, QWidget *now)
 static const int SETTLE_MS = 1500 ;
 static const int SETTLE_STEP_MS = 50 ;
 
+void showFocused(QDialog *dlg)
+{
+    installDialogFocusGuard() ;
+
+    // A window with a Qt parent is nested under that window in the accessibility tree, so it becomes a window of its own
+    if (dlg->parentWidget()) dlg->setParent(nullptr, dlg->windowFlags()) ;
+
+    accessibleTrace("show " + nameOfWidget(dlg) + " " + focusState()) ;
+    dlg->show() ;
+    activateDialog(dlg) ;
+}
+
 int execFocused(QDialog *dlg)
 {
     // QDialog::exec, not exec, so that a dialog which overrides exec() (ItemSelect) does not come back here.

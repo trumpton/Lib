@@ -69,8 +69,9 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     setModal(true) ;
     buttonView->setAccessibleName(runningText) ;
     buttonView->setText(runningText) ;
-    show() ;
+    // Shown active, with the button focused, so that the screen reader follows the window while the bar moves
     buttonView->setFocus() ;
+    showFocused(this) ;
 }
 
 void AProgressInfo::setCompleteValue(int value)
