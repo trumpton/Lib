@@ -44,6 +44,12 @@ Encryption::Encryption(QString domain, QString application, QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // Every label has text in every mode (see below), so none is left with the designer's placeholder "TextLabel"
+    ui->label0->setText("") ;
+    ui->label1->setText("") ;
+    ui->label2->setText("") ;
+    ui->label3->setText("") ;
+
     sDomain = domain ;
     sApplication = application ;
 
@@ -239,6 +245,7 @@ void Encryption::changePassword()
     ui->label3->setVisible(true) ;
     ui->lineEdit3->setVisible(true) ;
 
+    ui->label0->setText("") ;
     ui->label1->setText("Old Password") ;
     ui->label2->setText("New Password") ;
     ui->label3->setText("Re-enter") ;
@@ -324,7 +331,10 @@ void Encryption::login()
         ui->label3->setVisible(false) ;
         ui->lineEdit3->setVisible(false) ;
 
+        ui->label0->setText("") ;
+        ui->label1->setText("") ;
         ui->label2->setText("Password") ;
+        ui->label3->setText("") ;
         ui->lineEdit0->clear() ;
         ui->lineEdit1->clear() ;
         ui->lineEdit2->clear() ;
