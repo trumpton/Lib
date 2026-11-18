@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AProgressInfo</class>
+ <widget class="QDialog" name="AProgressInfo">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>769</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Progress</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="ATextEdit" name="updateStatusReport">
+     <property name="accessibleName">
+      <string>Progress Log</string>
+     </property>
+     <property name="tabChangesFocus">
+      <bool>true</bool>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="AProgressBar" name="progressBar">
+       <property name="accessibleName">
+        <string>Progress</string>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="APushButton" name="pushButton">
+       <property name="accessibleName">
+        <string>Abort</string>
+       </property>
+       <property name="text">
+        <string>Abort</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <customwidgets>
+  <customwidget>
+   <class>AProgressBar</class>
+   <extends>QProgressBar</extends>
+   <header>../Lib/aprogressbar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>APushButton</class>
+   <extends>QPushButton</extends>
+   <header>../Lib/apushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ATextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>../Lib/atextedit.h</header>
+  </customwidget>
+ </customwidgets>
+</ui>
