@@ -57,6 +57,8 @@ void AProgressInfo::setPartNames(const QString &logName, const QString &barName)
 
 void AProgressInfo::startProgress(const QString &task, const QString &runningText)
 {
+    // Every progress window starts with the same sound, as the Google sync always has
+    play(Ok) ;
     QString title = dialogTitle(task) ;
     setWindowTitle(title) ;
     // The accessible name is the title without its dash, as the appointment form names its dialog (Contact Manager Appointment)
