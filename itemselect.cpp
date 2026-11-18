@@ -1,12 +1,15 @@
 #include "itemselect.h"
 #include "ui_itemselect.h"
 #include "dialogfocus.h"
+#include "supportfunctions.h"
 
 ItemSelect::ItemSelect(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ItemSelect)
 {
     ui->setupUi(this);
+    // The prompt is the entry's name (see setTitle), so the screen reader reads it with the entry
+    hideLabelFromSpeech(ui->label) ;
 }
 
 ItemSelect::~ItemSelect()
@@ -22,8 +25,8 @@ int ItemSelect::exec()
 
 void ItemSelect::setTitle(QString title, QString prompt)
 {
-    this->setWindowTitle(title) ;
-    ui->inputLineEdit->setAccessibleName(prompt) ;
+    this->setWindowTitle(dialogTitle(title)) ;
+    ui->inputLineEdit->setAccessibleName(fieldName(prompt)) ;
     ui->label->setText(prompt) ;
 }
 

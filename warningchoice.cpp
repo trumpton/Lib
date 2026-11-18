@@ -63,7 +63,6 @@ int WarningChoice::addChoice(QString label, QChar key, QString description)
     APushButton *button = new APushButton(QString(letter).toUpper(), this) ;
     button->setFixedSize(square, square) ;
     button->setAccessibleName(label) ;
-    button->setAccessibleDescription(QString("%1. Press %2.").arg(description).arg(letter)) ;
     connect(button, &APushButton::clicked, this, [this, index]() { chooseIndex(index) ; }) ;
 
     ALabel *details = new ALabel(label + "\n" + description, this) ;

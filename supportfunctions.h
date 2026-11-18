@@ -47,6 +47,15 @@ bool backupFile(QString& path, QString& filename) ;
 
 
 // Present a warning form and OK button, or YES/NO buttons
+// The application's name starts the title of every dialog, as "Contact Manager - Setup".  The application sets it at start-up
+// with setDialogAppName(); until then the application's name is used.
+void setDialogAppName(const QString &name) ;
+// The title of a dialog for a task, as "Contact Manager - Setup".  An empty task gives the application's name alone.  The Lib
+// dialogs below take the task as their title, and add the application's name.
+QString dialogTitle(const QString &task) ;
+// The accessible name of a field, from its visible label: "Start:" from "Start", "Start:" or "Start?".  Accelerator marks are removed.
+QString fieldName(const QString &label) ;
+
 bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString yestext = QString("Yes"), QChar yeskey = QChar('y'), QString notext = QString("No"), QChar nokey = QChar('n')) ;
 
 // As above, with a checkbox to the left of the buttons.  checked is set to the state of the checkbox when the

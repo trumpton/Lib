@@ -7,6 +7,7 @@ Search::Search(QWidget *parent) :
     ui(new Ui::Search)
 {
     ui->setupUi(this);
+    setWindowTitle(dialogTitle("Search Results")) ;
     ui->listSearchResults->setModel(&strings) ;
     clearResults() ;
 }

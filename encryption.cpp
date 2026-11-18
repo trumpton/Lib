@@ -8,6 +8,8 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <QFile>
+#include <QLabel>
+#include <QLineEdit>
 
 // Hash is 512 bits / 64 bytes long
 #define HASHALG QCryptographicHash::Sha512
@@ -38,6 +40,14 @@ typedef struct {
 } ShMem ;
 
 
+// Each field is named as its label is shown in the current mode, so a label with no text leaves its field unnamed
+static void nameFields(Ui::Encryption *ui)
+{
+    QLabel *labels[] = { ui->label0, ui->label1, ui->label2, ui->label3 } ;
+    QLineEdit *fields[] = { ui->lineEdit0, ui->lineEdit1, ui->lineEdit2, ui->lineEdit3 } ;
+    for (int i=0 ; i<4 ; i++) fields[i]->setAccessibleName(labels[i]->text().isEmpty() ? QString() : fieldName(labels[i]->text())) ;
+}
+
 Encryption::Encryption(QString domain, QString application, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Encryption)
@@ -49,6 +59,11 @@ Encryption::Encryption(QString domain, QString application, QWidget *parent) :
     ui->label1->setText("") ;
     ui->label2->setText("") ;
     ui->label3->setText("") ;
+    // Each label is part of its field's name (see nameFields), so the screen reader does not read it on its own
+    hideLabelFromSpeech(ui->label0) ;
+    hideLabelFromSpeech(ui->label1) ;
+    hideLabelFromSpeech(ui->label2) ;
+    hideLabelFromSpeech(ui->label3) ;
 
     sDomain = domain ;
     sApplication = application ;
@@ -170,16 +185,17 @@ void Encryption::setKey()
     ui->label3->setVisible(true) ;
     ui->lineEdit3->setVisible(true) ;
 
-    ui->label0->setText("File encryption key") ;
-    ui->label1->setText("Re-enter") ;
-    ui->label2->setText("Login password") ;
-    ui->label3->setText("Re-enter") ;
+    ui->label0->setText("File Encryption Key") ;
+    ui->label1->setText("Re-enter Key") ;
+    ui->label2->setText("Login Password") ;
+    ui->label3->setText("Re-enter Password") ;
     ui->lineEdit0->clear() ;
     ui->lineEdit1->clear() ;
     ui->lineEdit2->clear() ;
     ui->lineEdit3->clear() ;
     ui->lineEdit0->setFocus() ;
-    this->setWindowTitle("Enter File Encryption Key and Login Password") ;
+    this->setWindowTitle(dialogTitle("Enter File Encryption Key and Login Password")) ;
+    nameFields(ui) ;
 
     if (execFocused(this)==QDialog::Accepted) {
 
@@ -248,13 +264,14 @@ void Encryption::changePassword()
     ui->label0->setText("") ;
     ui->label1->setText("Old Password") ;
     ui->label2->setText("New Password") ;
-    ui->label3->setText("Re-enter") ;
+    ui->label3->setText("Re-enter New Password") ;
     ui->lineEdit0->clear() ;
     ui->lineEdit1->clear() ;
     ui->lineEdit2->clear() ;
     ui->lineEdit3->clear() ;
     ui->lineEdit1->setFocus() ;
-    this->setWindowTitle("Change Login Password") ;
+    this->setWindowTitle(dialogTitle("Change Login Password")) ;
+    nameFields(ui) ;
 
     if (execFocused(this)==QDialog::Accepted) {
 
@@ -340,7 +357,8 @@ void Encryption::login()
         ui->lineEdit2->clear() ;
         ui->lineEdit3->clear() ;
         ui->lineEdit2->setFocus() ;
-        this->setWindowTitle("Login") ;
+        this->setWindowTitle(dialogTitle("Login")) ;
+        nameFields(ui) ;
 
         if (execFocused(this)!=QDialog::Accepted) {
             return ;

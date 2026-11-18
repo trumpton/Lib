@@ -8,6 +8,7 @@
 #include "accessibledatetimeedit.h"
 #include "alertsound.h"
 #include "dialogfocus.h"
+#include "supportfunctions.h"
 
 QDate dateInputDialog(QWidget *parent, QString title, QString prompt, QDate defaultdate, bool *ok)
 {
@@ -16,13 +17,14 @@ QDate dateInputDialog(QWidget *parent, QString title, QString prompt, QDate defa
     if (!defaultdate.isValid()) defaultdate = QDate::currentDate() ;
 
     QDialog dialog(parent) ;
-    dialog.setWindowTitle(title) ;
+    dialog.setWindowTitle(dialogTitle(title)) ;
 
     QVBoxLayout *layout = new QVBoxLayout(&dialog) ;
 
     // The prompt is the field's label, so a screen reader reads it with the field
     ALabel *label = new ALabel(prompt, &dialog) ;
     label->setWordWrap(true) ;
+    hideLabelFromSpeech(label) ;
     layout->addWidget(label) ;
 
     // Day, month name and year.  The time is noon, so the date is the same in every zone.
@@ -31,8 +33,7 @@ QDate dateInputDialog(QWidget *parent, QString title, QString prompt, QDate defa
     QDateTime when(defaultdate, QTime(12, 0)) ;
     edit->setDateTime(when) ;
     label->setBuddy(edit) ;
-    edit->setAccessibleName(prompt) ;
-    edit->setAccessibleDescription("Up and Down change a part, or type a number") ;
+    edit->setAccessibleName(fieldName(prompt)) ;
     layout->addWidget(edit) ;
 
     ADialogButtonBox *buttons = new ADialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog) ;

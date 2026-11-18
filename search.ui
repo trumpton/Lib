@@ -16,9 +16,6 @@
   <property name="accessibleName">
    <string>Search</string>
   </property>
-  <property name="accessibleDescription">
-   <string>Search</string>
-  </property>
   <widget class="ADialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>

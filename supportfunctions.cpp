@@ -1,3 +1,4 @@
+#include <QCoreApplication>
 #include "supportfunctions.h"
 #include <QTimeZone>
 #include <QtGlobal>
@@ -505,13 +506,36 @@ bool zip(QString contactmanagerbase, QString destinationfile)
 }
 
 
+static QString dialogAppName ;
+
+void setDialogAppName(const QString &name)
+{
+    dialogAppName = name ;
+}
+
+QString dialogTitle(const QString &task)
+{
+    QString app = dialogAppName.isEmpty() ? QCoreApplication::applicationName() : dialogAppName ;
+    if (task.trimmed().isEmpty()) return app ;
+    return app + " - " + task.trimmed() ;
+}
+
+QString fieldName(const QString &label)
+{
+    QString name = label.trimmed() ;
+    name.remove('&') ;
+    while (!name.isEmpty() && QString("?!.:").contains(name.back())) name.chop(1) ;
+    name = name.trimmed() ;
+    return name.isEmpty() ? name : name + ":" ;
+}
+
 //
 // Accessible pop-up dialog boxes
 //
 bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString yestext, QChar yeskey, QString notext, QChar nokey)
 {
     WarningYesNo yn(parent) ;
-    yn.setWindowTitle(title) ;
+    yn.setWindowTitle(dialogTitle(title)) ;
     yn.setText(message) ;
     yn.setButtons(yestext, yeskey, notext, nokey);
     play(Query) ;
@@ -521,7 +545,7 @@ bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString
 bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString yestext, QChar yeskey, QString notext, QChar nokey, QString checktext, bool checkdefault, bool &checked)
 {
     WarningYesNo yn(parent) ;
-    yn.setWindowTitle(title) ;
+    yn.setWindowTitle(dialogTitle(title)) ;
     yn.setText(message) ;
     yn.setButtons(yestext, yeskey, notext, nokey);
     yn.setCheckBox(checktext, checkdefault) ;
@@ -535,7 +559,7 @@ bool warningYesNoDialog(QWidget *parent, QString title, QString message, QString
 bool warningOkDialog(QWidget *parent, QString title, QString message, bool iserror, bool beep)
 {
     WarningOk yn(parent) ;
-    yn.setWindowTitle(title) ;
+    yn.setWindowTitle(dialogTitle(title)) ;
     yn.setText(message) ;
     if (beep) {
         if (iserror) play(Error) ;
@@ -554,13 +578,15 @@ QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::E
 {
     play(Query) ;
     QDialog dialog(parent) ;
-    dialog.setWindowTitle(title) ;
+    dialog.setWindowTitle(dialogTitle(title)) ;
     QVBoxLayout *layout = new QVBoxLayout(&dialog) ;
     ALabel *label = new ALabel(prompt, &dialog) ;
     layout->addWidget(label) ;
+    // The prompt is the entry's name, so the screen reader reads it with the entry, not on its own
+    hideLabelFromSpeech(label) ;
     ALineEdit *edit = new ALineEdit(&dialog) ;
     edit->setEchoMode(echo) ;
-    edit->setAccessibleName(accessibleName.isEmpty() ? prompt : accessibleName) ;
+    edit->setAccessibleName(fieldName(accessibleName.isEmpty() ? prompt : accessibleName)) ;
     if (!accessibleDescription.isEmpty()) edit->setAccessibleDescription(accessibleDescription) ;
     label->setBuddy(edit) ;
     // The text is shown with the cursor at the end and nothing selected, so a key typed adds to it
@@ -578,7 +604,7 @@ QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::E
 
 void criticalDialog(QWidget *parent, QString title, QString message)
 {
-    AMessageBox box(QMessageBox::Critical, title, message, QMessageBox::Ok, parent) ;
+    AMessageBox box(QMessageBox::Critical, dialogTitle(title), message, QMessageBox::Ok, parent) ;
     execFocused(&box) ;
 }
 
@@ -586,7 +612,7 @@ bool deliberateYesNoDialog(QWidget *parent, QString title, QString message, QStr
                            QString notext, QChar nokey, QString yesdescription, QString nodescription)
 {
     WarningYesNo yn(parent) ;
-    yn.setWindowTitle(title) ;
+    yn.setWindowTitle(dialogTitle(title)) ;
     yn.setText(message) ;
     if (!spokenMessage.isEmpty()) yn.setSpokenText(spokenMessage) ;
     yn.setButtons(yestext, yeskey, notext, nokey) ;
