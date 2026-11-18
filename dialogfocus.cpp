@@ -87,6 +87,16 @@ static QString focusState()
         .arg(nameOfWidget(QApplication::activeModalWidget())) ;
 }
 
+// True while a popup is open (a combo box list, a menu, a completer), or the focus is in one.  A popup is a window of its own,
+// so the dialog's focus guard must leave the focus alone: moving it back to the dialog closes the popup.
+static bool popupInUse(QWidget *w = nullptr)
+{
+    if (QApplication::activePopupWidget()) return true ;
+    if (!w) return false ;
+    Qt::WindowType type = w->window()->windowType() ;
+    return type==Qt::Popup || type==Qt::ToolTip ;
+}
+
 // Tells the screen reader which control has the focus.  Qt reports a focus change to it, but not when the window is not
 // active, or when the control already had the focus, so the report is sent here as well.
 static void announceFocus(QWidget *w)
@@ -102,6 +112,7 @@ static void activateDialog(QDialog *dlg)
 {
     accessibleTrace("activate " + nameOfWidget(dlg) + " " + focusState()) ;
     if (QApplication::activeModalWidget()!=dlg) return ;
+    if (popupInUse()) { accessibleTrace("popup open: the dialog is not activated") ; return ; }
 #ifdef Q_OS_WIN
     forceForeground(dlg) ;
 #endif
@@ -142,10 +153,11 @@ static void keepFocusInModalDialog(QWidget *old, QWidget *now)
     QWidget *modal = QApplication::activeModalWidget() ;
     if (!modal || !now) return ;
     if (now==modal || modal->isAncestorOf(now)) return ;
+    if (popupInUse(now)) { accessibleTrace("focus went to the popup " + nameOfWidget(now) + ": left there") ; return ; }
     accessibleTrace("focus went to " + nameOfWidget(now) + " outside the dialog " + nameOfWidget(modal) + " " + focusState()) ;
 
     QTimer::singleShot(0, modal, [modal]() {
-        if (QApplication::activeModalWidget()!=modal) return ;
+        if (QApplication::activeModalWidget()!=modal || popupInUse()) return ;
         if (QDialog *dlg = qobject_cast<QDialog *>(modal)) activateDialog(dlg) ;
         else {
             modal->activateWindow() ;
@@ -182,6 +194,7 @@ int execFocused(QDialog *dlg)
             settle->stop() ;
             return ;
         }
+        if (popupInUse()) return ;
         if (QApplication::activeWindow()!=dlg) activateDialog(dlg) ;
     }) ;
     settle->start() ;
