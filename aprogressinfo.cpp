@@ -71,9 +71,10 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     setModal(true) ;
     buttonView->setAccessibleName(runningText) ;
     buttonView->setText(runningText) ;
-    // EXPERIMENT (progress-tone ticket, candidate 1): shown without activation, as at aa8811a.  Set showFocused(this) to restore.
-    buttonView->setFocus() ;
+    // Shown without activation, then the button focused: the order the progress tone was last heard in (aa8811a).
+    // Focusing before the window is shown is candidate 8 in the progress-tone ticket.
     show() ;
+    buttonView->setFocus() ;
 }
 
 void AProgressInfo::setCompleteValue(int value)
