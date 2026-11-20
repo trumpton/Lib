@@ -20,13 +20,6 @@
 // See documents/gotchas.md 6.14.
 static const int PROGRESS_YIELD_MS = 50 ;
 
-static void yieldToEvents(int ms)
-{
-    QEventLoop loop ;
-    QTimer::singleShot(ms, &loop, &QEventLoop::quit) ;
-    loop.exec() ;
-}
-
 AProgressInfo::AProgressInfo(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AProgressInfo)

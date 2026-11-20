@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QDialog>
 #include <QElapsedTimer>
+#include <QEventLoop>
 #include <QFile>
 #include <QGuiApplication>
 #include <QPointer>
@@ -85,6 +86,13 @@ static QString focusState()
         .arg(nameOfWidget(QApplication::focusWidget()))
         .arg(nameOfWidget(QApplication::activeWindow()))
         .arg(nameOfWidget(QApplication::activeModalWidget())) ;
+}
+
+void yieldToEvents(int ms)
+{
+    QEventLoop loop ;
+    QTimer::singleShot(ms, &loop, &QEventLoop::quit) ;
+    loop.exec() ;
 }
 
 void traceFocus(const QString &where)
