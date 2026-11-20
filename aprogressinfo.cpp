@@ -7,9 +7,6 @@
 #include "dialogfocus.h"
 #include "supportfunctions.h"
 
-#include <QAccessible>
-#include <QAccessibleValueInterface>
-#include <QApplication>
 #include <QCoreApplication>
 #include <QtGlobal>
 
@@ -26,17 +23,6 @@ AProgressInfo::AProgressInfo(QWidget *parent) :
     aborted = false ;
     finished = false ;
     barView->setRange(0, complete) ;
-
-    // With the accessibility trace on, each change of the bar is traced with the value its accessibility interface reports:
-    // a change the screen reader is not sent appears here with no accessible value, or with the old one
-    connect(barView, &QProgressBar::valueChanged, this, [this](int value) {
-        if (!accessibleTraceIsOn()) return ;
-        QAccessibleInterface *iface = QAccessible::queryAccessibleInterface(barView) ;
-        QString accessible = (iface && iface->valueInterface()) ? iface->valueInterface()->currentValue().toString() : QString("none") ;
-        accessibleTrace(QString("progress bar value %1 of %2, accessible value %3, visible %4, focus %5")
-                        .arg(value).arg(barView->maximum()).arg(accessible).arg(barView->isVisible())
-                        .arg(QApplication::focusWidget() ? QApplication::focusWidget()->objectName() : QString("none"))) ;
-    }) ;
 }
 
 AProgressInfo::~AProgressInfo()
