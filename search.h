@@ -12,7 +12,7 @@ class Search;
 class AListView ;
 
 // Search: the list dialog shared by every search and by the transaction edit.  Its first line is the list's name, such as
-// "Global Find Contact Manager Results", and it is the line the list starts on.  That line is not a result: choosing it plays the
+// "Contact Manager: Global Find", padded to 40 characters, and it is the line the list starts on.  That line is not a result: choosing it plays the
 // error sound.  The results are the lines after it.
 class Search : public QDialog
 {

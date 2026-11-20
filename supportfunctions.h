@@ -51,8 +51,9 @@ bool backupFile(QString& path, QString& filename) ;
 // with setDialogAppName(); until then the application's name is used.
 void setDialogAppName(const QString &name) ;
 
-// The name line of a results list: the search's name and the application's name, as "Global Find Contact Manager Results".
-QString resultsName(const QString &search) ;
+// The name line of a results list: the application's name and the query type, as "Contact Manager: Global Find", right-padded
+// with spaces to 40 characters.
+QString resultsName(const QString &query) ;
 // The title of a dialog for a task, as "Contact Manager - Setup".  An empty task gives the application's name alone.  The Lib
 // dialogs below take the task as their title, and add the application's name.
 QString dialogTitle(const QString &task) ;

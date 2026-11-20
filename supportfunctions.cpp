@@ -513,10 +513,10 @@ void setDialogAppName(const QString &name)
     dialogAppName = name ;
 }
 
-QString resultsName(const QString &search)
+QString resultsName(const QString &query)
 {
     QString app = dialogAppName.isEmpty() ? QCoreApplication::applicationName() : dialogAppName ;
-    return search + " " + app + " Results" ;
+    return (app + ": " + query).leftJustified(40, ' ') ;
 }
 
 QString dialogTitle(const QString &task)
