@@ -30,6 +30,10 @@ public:
     // Shows the window for a task, with the title dialogTitle(task).  The bar is at 0, and the button says runningText.
     void startProgress(const QString &task, const QString &runningText = QString("Abort")) ;
 
+    // Log lines are written as they arrive (true) or held until the operation finishes (false, the default).  Held lines keep the
+    // screen reader from reading the log during the operation (documents/gotchas.md 6.15).
+    static void setProgressLogLive(bool live) ;
+
     // The bar's value for 100%.  It is 100 unless set here.
     void setCompleteValue(int value) ;
     int completeValue() const ;

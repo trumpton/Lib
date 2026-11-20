@@ -48,10 +48,17 @@ AProgressInfo::~AProgressInfo()
     delete ui ;
 }
 
+static bool progressLogLive = false ;
+
+void AProgressInfo::setProgressLogLive(bool live)
+{
+    progressLogLive = live ;
+}
+
 void AProgressInfo::logLine(const QString &line)
 {
     if (line.isEmpty()) return ;
-    if (buffering) pendingLog << line ;
+    if (buffering && !progressLogLive) pendingLog << line ;
     else logView->appendPlainText(line) ;
 }
 
