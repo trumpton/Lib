@@ -41,9 +41,6 @@
      <height>211</height>
     </rect>
    </property>
-   <property name="accessibleName">
-    <string>Search Results</string>
-   </property>
    <property name="horizontalScrollBarPolicy">
     <enum>Qt::ScrollBarAlwaysOff</enum>
    </property>
