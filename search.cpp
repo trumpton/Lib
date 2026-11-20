@@ -3,6 +3,7 @@
 #include "supportfunctions.h"
 #include "alertsound.h"
 #include "alistview.h"
+#include <QVBoxLayout>
 #include <QKeyEvent>
 
 Search::Search(QWidget *parent, const QString &line, const QString &task) :
@@ -12,6 +13,10 @@ Search::Search(QWidget *parent, const QString &line, const QString &task) :
 {
     ui->setupUi(this);
     setWindowTitle(dialogTitle(task)) ;
+    // The list fills the dialog above the buttons, so it grows with the dialog
+    QVBoxLayout *layout = new QVBoxLayout(this) ;
+    layout->addWidget(ui->listSearchResults, 1) ;
+    layout->addWidget(ui->buttonBox) ;
     ui->listSearchResults->setModel(&strings) ;
     // The list takes the focus when the dialog is shown: the buttons come after it
     setFocusProxy(ui->listSearchResults) ;

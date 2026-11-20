@@ -12,12 +12,20 @@ void AListView::setCurrentIndex(const QModelIndex &idx)
     curridx = idx ;
     if (hasFocus()) {
         QListView::setCurrentIndex(curridx) ;
-        selectionModel()->select(curridx, QItemSelectionModel::Select);
+        selectCurrent() ;
         dbg(QString("hasfocus, curridx.row=%1").arg(curridx.row())) ;
         emit selectionChanged(curridx);
     } else {
         dbg(QString("does not have focus, caching curridx.row=%1").arg(curridx.row())) ;
     }
+}
+
+// The current entry is marked as selected, unless the list has no selection (a list of entries to move through and choose, as in
+// the search results and the transaction edit).  The selection model would otherwise mark it whatever the mode.
+void AListView::selectCurrent()
+{
+    if (selectionMode()==NoSelection || !selectionModel()) return ;
+    selectionModel()->select(curridx, QItemSelectionModel::Select);
 }
 
 void AListView::layoutNow()
@@ -32,7 +40,7 @@ void AListView::focusInEvent(QFocusEvent * e)
 
     if (curridx.isValid()) {
         QListView::setCurrentIndex(curridx) ;
-        selectionModel()->select(curridx, QItemSelectionModel::Select);
+        selectCurrent() ;
         dbg(QString("gained focus, curridx.row=%1").arg(curridx.row())) ;
         emit selectionChanged(curridx) ;
     }
