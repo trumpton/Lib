@@ -12,15 +12,15 @@ class Search;
 class AListView ;
 
 // Search: the list dialog shared by every search and by the transaction edit.  Its first line is the list's name, such as
-// "C.M. Search Results for Global Find", and it is the line the list starts on.  That line is not a result: choosing it plays the
+// "Global Find Contact Manager Results", and it is the line the list starts on.  That line is not a result: choosing it plays the
 // error sound.  The results are the lines after it.
 class Search : public QDialog
 {
     Q_OBJECT
 
 public:
-    // firstLine is the name line, after the application's short name (for example "Search Results for Global Find").  task is the
-    // dialog's task, for its title ("Contact Manager - Search Results").
+    // firstLine is the name line (for example resultsName("Global Find")).  task is the dialog's task, for its title
+    // ("Contact Manager - Search Results").
     explicit Search(QWidget *parent = 0, const QString &firstLine = QString("Search Results"), const QString &task = QString("Search Results"));
     ~Search();
     void clearResults() ;

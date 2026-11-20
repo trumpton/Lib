@@ -31,8 +31,7 @@ void Search::clearResults()
     ui->listSearchResults->reset() ;
     strings.clear() ;
     // The name line is the first line, and the current one: the user moves down from it to the results
-    QString name = dialogShortName() + " " + firstLine ;
-    strings.appendData(name, name, QString()) ;
+    strings.appendData(firstLine, firstLine, QString()) ;
     ui->listSearchResults->setCurrentIndex(ui->listSearchResults->model()->index(0, 0)) ;
 }
 
