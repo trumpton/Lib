@@ -20,6 +20,9 @@
 // See documents/gotchas.md 6.14.
 static const int PROGRESS_YIELD_MS = 50 ;
 
+// How long the window is given to settle on the button before the operation writes to it (see startProgress)
+static const int FOCUS_SETTLE_MS = 200 ;
+
 AProgressInfo::AProgressInfo(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AProgressInfo)
@@ -100,6 +103,8 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     // screen reader does not read its text as it is written: the listener hears the progress bar and the button's name.
     buttonView->setDefault(true) ;
     buttonView->setFocus() ;
+    // The window and the focus settle before any text is written, so the screen reader has the button when the text arrives
+    yieldToEvents(FOCUS_SETTLE_MS) ;
     traceFocus("progress shown: " + title) ;
 }
 
