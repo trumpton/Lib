@@ -513,6 +513,18 @@ void setDialogAppName(const QString &name)
     dialogAppName = name ;
 }
 
+static QString dialogShortAppName ;
+
+void setDialogShortName(const QString &name)
+{
+    dialogShortAppName = name ;
+}
+
+QString dialogShortName()
+{
+    return dialogShortAppName.isEmpty() ? QCoreApplication::applicationName() : dialogShortAppName ;
+}
+
 QString dialogTitle(const QString &task)
 {
     QString app = dialogAppName.isEmpty() ? QCoreApplication::applicationName() : dialogAppName ;

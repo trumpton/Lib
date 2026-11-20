@@ -50,6 +50,11 @@ bool backupFile(QString& path, QString& filename) ;
 // The application's name starts the title of every dialog, as "Contact Manager - Setup".  The application sets it at start-up
 // with setDialogAppName(); until then the application's name is used.
 void setDialogAppName(const QString &name) ;
+
+// The short name of the application, for the start of the first line of a results list ("C.M. Search Results for Global Find")
+// and the prompts of the Find boxes ("C.M. Find:").  Set at start-up with setDialogShortName(); until then the application's name is used.
+void setDialogShortName(const QString &name) ;
+QString dialogShortName() ;
 // The title of a dialog for a task, as "Contact Manager - Setup".  An empty task gives the application's name alone.  The Lib
 // dialogs below take the task as their title, and add the application's name.
 QString dialogTitle(const QString &task) ;

@@ -2,17 +2,22 @@
 #include "ui_search.h"
 #include "supportfunctions.h"
 #include "alertsound.h"
+#include "alistview.h"
+#include <QKeyEvent>
 
-Search::Search(QWidget *parent, const QString &name) :
+Search::Search(QWidget *parent, const QString &line, const QString &task) :
     QDialog(parent),
     ui(new Ui::Search),
-    heading(name)
+    firstLine(line)
 {
     ui->setupUi(this);
-    setWindowTitle(dialogTitle("Search Results")) ;
+    setWindowTitle(dialogTitle(task)) ;
     ui->listSearchResults->setModel(&strings) ;
-    // Enter or a double click chooses the line, as OK does
-    connect(ui->listSearchResults, &QAbstractItemView::activated, this, &Search::accept) ;
+    // The list takes the focus when the dialog is shown: the buttons come after it
+    setFocusProxy(ui->listSearchResults) ;
+    // A double click chooses the line, and Enter does (see eventFilter)
+    connect(ui->listSearchResults, &QAbstractItemView::activated, this, [this](const QModelIndex &) { lineChosen() ; }) ;
+    ui->listSearchResults->installEventFilter(this) ;
     clearResults() ;
 }
 
@@ -20,16 +25,15 @@ void Search::clearResults()
 {
     ui->listSearchResults->reset() ;
     strings.clear() ;
-    // The first line names the search.  It is the list's only line until a result is added, and it is not a result.
-    QString title = heading.isEmpty() ? QString("Search Results") : QString("Search Results for ") + heading ;
-    strings.appendData(title, title, QString()) ;
+    // The name line is the first line, and the current one: the user moves down from it to the results
+    QString name = dialogShortName() + " " + firstLine ;
+    strings.appendData(name, name, QString()) ;
+    ui->listSearchResults->setCurrentIndex(ui->listSearchResults->model()->index(0, 0)) ;
 }
 
 void Search::addString(QString resulttext, QString resulthint)
 {
     strings.appendData(resulttext, resulttext, resulthint) ;
-    // The first result is the line chosen, not the name line
-    if (strings.rowCount()==2) ui->listSearchResults->setCurrentIndex(ui->listSearchResults->model()->index(1, 0)) ;
     dbg("Search::addString: listSearchResults->setFocus()") ;
     ui->listSearchResults->setFocus() ;
 }
@@ -37,6 +41,29 @@ void Search::addString(QString resulttext, QString resulthint)
 Search::~Search()
 {
     delete ui;
+}
+
+// Enter on the list chooses the line, and the key is taken here: otherwise the dialog's default button (OK) would act on it too
+bool Search::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched==ui->listSearchResults && event->type()==QEvent::KeyPress) {
+        QKeyEvent *key = static_cast<QKeyEvent *>(event) ;
+        if (key->key()==Qt::Key_Return || key->key()==Qt::Key_Enter) {
+            lineChosen() ;
+            return true ;
+        }
+    }
+    return QDialog::eventFilter(watched, event) ;
+}
+
+AListView *Search::resultList()
+{
+    return ui->listSearchResults ;
+}
+
+void Search::lineChosen()
+{
+    accept() ;
 }
 
 // Choosing the name line is an error; the dialog stays open
@@ -53,6 +80,13 @@ QString Search::getSelection()
 {
     int index = ui->listSearchResults->currentIndex().row() ;
     if (index>=1) return strings.hintAt(index) ;
+    else return QString("") ;
+}
+
+QString Search::getSelectionText()
+{
+    int index = ui->listSearchResults->currentIndex().row() ;
+    if (index>=1) return ui->listSearchResults->model()->index(index, 0).data(Qt::DisplayRole).toString() ;
     else return QString("") ;
 }
 
