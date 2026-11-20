@@ -5,23 +5,11 @@
 #include "apushbutton.h"
 #include "alertsound.h"
 #include "dialogfocus.h"
+#include "yieldtoevents.h"
 #include "supportfunctions.h"
 
 #include <QCoreApplication>
-#include <QEventLoop>
-#include <QTimer>
 #include <QtGlobal>
-
-// Each bar update runs the event loop for this long, so the window handles events while the operation runs, as the Google
-// sync does while it waits for the server.  NVDA reads the window through accessibility events, and it can only get them
-// and read the bar (its progress tone) while this thread handles events.  Two alternatives do not work: processEvents() on
-// its own returns at once and gives no time, and QThread::msleep() yields the processor but handles no events, so NVDA is
-// still not served.  Without this, the Tidy Records progress tone did not play and the braille prompt was stale.
-// See documents/gotchas.md 6.14.
-static const int PROGRESS_YIELD_MS = 50 ;
-
-// How long the window is given to settle on the button before the operation writes to it (see startProgress)
-static const int FOCUS_SETTLE_MS = 200 ;
 
 AProgressInfo::AProgressInfo(QWidget *parent) :
     QDialog(parent),
@@ -36,7 +24,6 @@ AProgressInfo::AProgressInfo(QWidget *parent) :
     running = false ;
     aborted = false ;
     finished = false ;
-    buffering = false ;
     barView->setRange(0, complete) ;
 
     // The log does not take the focus when the window is shown.  Qt gives the focus to the first focusable control when the
@@ -51,26 +38,10 @@ AProgressInfo::~AProgressInfo()
     delete ui ;
 }
 
-static bool progressLogLive = false ;
-
-void AProgressInfo::setProgressLogLive(bool live)
-{
-    progressLogLive = live ;
-}
-
 void AProgressInfo::logLine(const QString &line)
 {
     if (line.isEmpty()) return ;
-    if (buffering && !progressLogLive) pendingLog << line ;
-    else logView->appendPlainText(line) ;
-}
-
-// Writes the held lines to the log, in order
-void AProgressInfo::flushLog()
-{
-    buffering = false ;
-    for (const QString &line : pendingLog) logView->appendPlainText(line) ;
-    pendingLog.clear() ;
+    logView->appendPlainText(line) ;
 }
 
 void AProgressInfo::setPartNames(const QString &logName, const QString &barName)
@@ -88,7 +59,6 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     // The accessible name is the title without its dash, as the appointment form names its dialog (Contact Manager Appointment)
     setAccessibleName(QString(title).replace(" - ", " ")) ;
     running = true ;
-    buffering = true ;
     aborted = false ;
     finished = false ;
     barView->setRange(0, complete) ;
@@ -104,7 +74,7 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     buttonView->setDefault(true) ;
     buttonView->setFocus() ;
     // The window and the focus settle before any text is written, so the screen reader has the button when the text arrives
-    yieldToEvents(FOCUS_SETTLE_MS) ;
+    yieldToEvents(PROGRESS_SETTLE_MS) ;
     traceFocus("progress shown: " + title) ;
 }
 
@@ -140,7 +110,6 @@ void AProgressInfo::reportProgress(int value, const QString &line)
 
 void AProgressInfo::finishProgress(const QString &summary, const QString &buttonText)
 {
-    flushLog() ;
     logLine(summary) ;
     barView->setValue(complete) ;
     QCoreApplication::processEvents() ;

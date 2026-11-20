@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QString>
-#include <QStringList>
 
 class ATextEdit ;
 class AProgressBar ;
@@ -29,10 +28,6 @@ public:
 
     // Shows the window for a task, with the title dialogTitle(task).  The bar is at 0, and the button says runningText.
     void startProgress(const QString &task, const QString &runningText = QString("Abort")) ;
-
-    // Log lines are written as they arrive (true) or held until the operation finishes (false, the default).  Held lines keep the
-    // screen reader from reading the log during the operation (documents/gotchas.md 6.15).
-    static void setProgressLogLive(bool live) ;
 
     // The bar's value for 100%.  It is 100 unless set here.
     void setCompleteValue(int value) ;
@@ -84,11 +79,6 @@ private:
     bool running ;
     bool aborted ;
     bool finished ;
-    // While the operation runs, log lines are held here and written to the log when it finishes.  Writing into the log while the
-    // operation runs makes the screen reader read the text as it arrives, so the progress is heard as the bar and the button only.
-    bool buffering ;
-    QStringList pendingLog ;
-    void flushLog() ;
 } ;
 
 #endif // APROGRESSINFO_H

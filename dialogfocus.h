@@ -34,10 +34,6 @@ void setAccessibleTrace(bool on) ;
 void setAccessibleTraceFolder(QString (*folder)()) ;
 void accessibleTrace(const QString &line) ;
 
-// Runs the event loop for ms, so the window handles its events and the screen reader can read it.  Use it between the steps of a
-// long operation that updates a progress bar: processEvents() alone returns at once and gives no time, and QThread::msleep()
-// handles no events.  See documents/gotchas.md 6.14.
-void yieldToEvents(int ms) ;
 
 // Writes the state of the focus to the trace, after the text where: the focus control, the active window and the modal dialog.
 // Nothing is written unless the trace is on.

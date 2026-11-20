@@ -1,10 +1,7 @@
 #include "aprogressdialog.h"
-#include "dialogfocus.h"
+#include "yieldtoevents.h"
 
 #include <QPushButton>
-
-// Each step lets the window handle events for this long (see AProgressInfo, which does the same)
-static const int PROGRESS_YIELD_MS = 50 ;
 
 void AProgressDialog::showProgress()
 {

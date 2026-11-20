@@ -88,13 +88,6 @@ static QString focusState()
         .arg(nameOfWidget(QApplication::activeModalWidget())) ;
 }
 
-void yieldToEvents(int ms)
-{
-    QEventLoop loop ;
-    QTimer::singleShot(ms, &loop, &QEventLoop::quit) ;
-    loop.exec() ;
-}
-
 void traceFocus(const QString &where)
 {
     if (!traceOn) return ;
