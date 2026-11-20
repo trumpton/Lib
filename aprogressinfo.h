@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <QStringList>
 
 class ATextEdit ;
 class AProgressBar ;
@@ -17,7 +18,7 @@ class AProgressInfo ;
 // completion sound, and changes the button to its finished text (OK by default).  Then the button closes the window.
 //
 // Construct it with no Qt parent: new AProgressInfo(nullptr).  startProgress() shows the window with show(), as it stays open
-// while the user works elsewhere (documents/tickets/parented-windows.md); finishProgress() waits for the user with execFocused().
+// while the user works elsewhere (GitHub issue #143); finishProgress() waits for the user with execFocused().
 class AProgressInfo : public QDialog
 {
     Q_OBJECT
@@ -79,6 +80,11 @@ private:
     bool running ;
     bool aborted ;
     bool finished ;
+    // While the operation runs, log lines are held here and written to the log when it finishes.  Writing into the log while the
+    // operation runs makes the screen reader read the text as it arrives, so the progress is heard as the bar and the button only.
+    bool buffering ;
+    QStringList pendingLog ;
+    void flushLog() ;
 } ;
 
 #endif // APROGRESSINFO_H

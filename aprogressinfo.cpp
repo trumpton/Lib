@@ -33,6 +33,7 @@ AProgressInfo::AProgressInfo(QWidget *parent) :
     running = false ;
     aborted = false ;
     finished = false ;
+    buffering = false ;
     barView->setRange(0, complete) ;
 
     // The log does not take the focus when the window is shown.  Qt gives the focus to the first focusable control when the
@@ -49,7 +50,17 @@ AProgressInfo::~AProgressInfo()
 
 void AProgressInfo::logLine(const QString &line)
 {
-    if (!line.isEmpty()) logView->appendPlainText(line) ;
+    if (line.isEmpty()) return ;
+    if (buffering) pendingLog << line ;
+    else logView->appendPlainText(line) ;
+}
+
+// Writes the held lines to the log, in order
+void AProgressInfo::flushLog()
+{
+    buffering = false ;
+    for (const QString &line : pendingLog) logView->appendPlainText(line) ;
+    pendingLog.clear() ;
 }
 
 void AProgressInfo::setPartNames(const QString &logName, const QString &barName)
@@ -67,6 +78,7 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     // The accessible name is the title without its dash, as the appointment form names its dialog (Contact Manager Appointment)
     setAccessibleName(QString(title).replace(" - ", " ")) ;
     running = true ;
+    buffering = true ;
     aborted = false ;
     finished = false ;
     barView->setRange(0, complete) ;
@@ -116,6 +128,7 @@ void AProgressInfo::reportProgress(int value, const QString &line)
 
 void AProgressInfo::finishProgress(const QString &summary, const QString &buttonText)
 {
+    flushLog() ;
     logLine(summary) ;
     barView->setValue(complete) ;
     QCoreApplication::processEvents() ;
