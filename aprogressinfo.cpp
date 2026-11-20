@@ -19,6 +19,7 @@ AProgressInfo::AProgressInfo(QWidget *parent) :
     barView = ui->progressBar ;
     buttonView = ui->pushButton ;
     complete = 100 ;
+    progressoffset = 0 ;
     running = false ;
     aborted = false ;
     finished = false ;
@@ -75,10 +76,16 @@ int AProgressInfo::completeValue() const
     return complete ;
 }
 
+void AProgressInfo::setProgressOffset(int offset)
+{
+    progressoffset = offset ;
+}
+
 void AProgressInfo::setProgress(int value)
 {
-    barView->setValue(qBound(0, value, complete)) ;
-    traceFocus(QString("progress bar %1").arg(value)) ;
+    int bar = qBound(0, value + progressoffset, complete) ;
+    barView->setValue(bar) ;
+    traceFocus(QString("progress bar %1").arg(bar)) ;
     QCoreApplication::processEvents() ;
 }
 

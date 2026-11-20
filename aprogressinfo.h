@@ -34,6 +34,7 @@ public:
     int completeValue() const ;
 
     // Sets the bar, and lets the window process events so that it keeps responding.  The value is kept between 0 and the 100% value.
+    // The offset set by setProgressOffset is added to the value first.
     virtual void setProgress(int value) ;
 
     // Writes a line to the log (when it is not empty), and sets the bar.
@@ -54,6 +55,11 @@ protected:
     // Writes a line to the log.  The log is read by the screen reader as it is written, so only what the user needs is written.
     void logLine(const QString &line) ;
 
+    // Added to each value passed to setProgress, so that a phase which reports from 0 fills its own part of the bar (the Google
+    // sync's contacts take 0 to 500, and its calendar 500 to 1000).  It is 0 unless set here, so a window that never sets it,
+    // as the tidy does not, shows its values as they are.
+    void setProgressOffset(int offset) ;
+
     // The button press: Abort while the operation runs, and closes the window once it has finished.  A subclass that keeps its
     // own state overrides this.
     virtual void buttonPressed() ;
@@ -68,6 +74,7 @@ private:
     APushButton *buttonView ;
     Ui::AProgressInfo *ui ;
     int complete ;
+    int progressoffset ;
     bool running ;
     bool aborted ;
     bool finished ;
