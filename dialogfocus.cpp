@@ -87,6 +87,12 @@ static QString focusState()
         .arg(nameOfWidget(QApplication::activeModalWidget())) ;
 }
 
+void traceFocus(const QString &where)
+{
+    if (!traceOn) return ;
+    accessibleTrace(where + " " + focusState()) ;
+}
+
 // True while a popup is open (a combo box list, a menu, a completer), or the focus is in one.  A popup is a window of its own,
 // so the dialog's focus guard must leave the focus alone: moving it back to the dialog closes the popup.
 static bool popupInUse(QWidget *w = nullptr)

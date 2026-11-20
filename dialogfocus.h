@@ -34,4 +34,8 @@ void setAccessibleTrace(bool on) ;
 void setAccessibleTraceFolder(QString (*folder)()) ;
 void accessibleTrace(const QString &line) ;
 
+// Writes the state of the focus to the trace, after the text where: the focus control, the active window and the modal dialog.
+// Nothing is written unless the trace is on.
+void traceFocus(const QString &where) ;
+
 #endif // DIALOGFOCUS_H

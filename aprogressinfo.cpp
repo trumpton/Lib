@@ -61,6 +61,7 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     // Focusing before the window is shown is candidate 8 in the progress-tone ticket.
     show() ;
     buttonView->setFocus() ;
+    traceFocus("progress shown: " + title) ;
 }
 
 void AProgressInfo::setCompleteValue(int value)
@@ -77,6 +78,7 @@ int AProgressInfo::completeValue() const
 void AProgressInfo::setProgress(int value)
 {
     barView->setValue(qBound(0, value, complete)) ;
+    traceFocus(QString("progress bar %1").arg(value)) ;
     QCoreApplication::processEvents() ;
 }
 
@@ -97,6 +99,7 @@ void AProgressInfo::finishProgress(const QString &summary, const QString &button
     buttonView->setAccessibleName(buttonText) ;
     buttonView->setText(buttonText) ;
     buttonView->setFocus() ;
+    traceFocus("progress finished, waiting for OK") ;
     execFocused(this) ;
 }
 
