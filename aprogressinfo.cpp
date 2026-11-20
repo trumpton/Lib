@@ -12,9 +12,12 @@
 #include <QTimer>
 #include <QtGlobal>
 
-// Each bar update lets the window handle events for this long, as the Google sync does while it waits for the server.  The
-// screen reader reads the window from those events, so an update that only calls processEvents() (which returns at once)
-// leaves it behind.
+// Each bar update runs the event loop for this long, so the window handles events while the operation runs, as the Google
+// sync does while it waits for the server.  NVDA reads the window through accessibility events, and it can only get them
+// and read the bar (its progress tone) while this thread handles events.  Two alternatives do not work: processEvents() on
+// its own returns at once and gives no time, and QThread::msleep() yields the processor but handles no events, so NVDA is
+// still not served.  Without this, the Tidy Records progress tone did not play and the braille prompt was stale.
+// See documents/gotchas.md 6.14.
 static const int PROGRESS_YIELD_MS = 50 ;
 
 static void yieldToEvents(int ms)
@@ -39,8 +42,10 @@ AProgressInfo::AProgressInfo(QWidget *parent) :
     finished = false ;
     barView->setRange(0, complete) ;
 
-    // The log does not take the focus when the window is shown.  Qt would give it to the log first, so the screen reader would
-    // read the log's last line, and then the button.  The log takes the focus with Tab once the button has it (startProgress).
+    // The log does not take the focus when the window is shown.  Qt gives the focus to the first focusable control when the
+    // window is activated, which would be the log.  NVDA would then read the log's last line before the button's name, so the
+    // prompt would start with the end of a log line.  The log is made focusable again in startProgress, once the button has
+    // the focus, so that Tab still reaches it.  See documents/gotchas.md 6.15.
     logView->setFocusPolicy(Qt::NoFocus) ;
 }
 
@@ -80,6 +85,7 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     // Focusing before the window is shown is candidate 8 in the progress-tone ticket.
     show() ;
     buttonView->setFocus() ;
+    // The log can be reached with Tab from here on (it was kept out of the focus when the window was shown; see the constructor)
     logView->setFocusPolicy(Qt::StrongFocus) ;
     traceFocus("progress shown: " + title) ;
 }

@@ -33,8 +33,9 @@ public:
     void setCompleteValue(int value) ;
     int completeValue() const ;
 
-    // Sets the bar, and lets the window process events so that it keeps responding.  The value is kept between 0 and the 100% value.
-    // The offset set by setProgressOffset is added to the value first.
+    // Sets the bar, and then runs the event loop for a short time, so that the screen reader can read the bar and the window
+    // keeps responding (documents/gotchas.md 6.14).  The value is kept between 0 and the 100% value.  The offset set by
+    // setProgressOffset is added to the value first.
     virtual void setProgress(int value) ;
 
     // Writes a line to the log (when it is not empty), and sets the bar.
