@@ -46,12 +46,13 @@ public:
     // True once the button has been pressed while the operation was running.
     virtual bool isAborted() const ;
 
+    // The accessible names of the log and of the bar, for a window whose parts have their own (for example "Update Progress").
+    // Set them before startProgress(), as the Google sync and the tidy do.
+    void setPartNames(const QString &logName, const QString &barName) ;
+
 protected:
     // Writes a line to the log.  The log is read by the screen reader as it is written, so only what the user needs is written.
     void logLine(const QString &line) ;
-
-    // The accessible names of the log and of the bar, for a subclass whose window has its own (for example "Update Progress").
-    void setPartNames(const QString &logName, const QString &barName) ;
 
     // The button press: Abort while the operation runs, and closes the window once it has finished.  A subclass that keeps its
     // own state overrides this.
