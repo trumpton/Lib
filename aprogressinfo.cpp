@@ -8,7 +8,21 @@
 #include "supportfunctions.h"
 
 #include <QCoreApplication>
+#include <QEventLoop>
+#include <QTimer>
 #include <QtGlobal>
+
+// Each bar update lets the window handle events for this long, as the Google sync does while it waits for the server.  The
+// screen reader reads the window from those events, so an update that only calls processEvents() (which returns at once)
+// leaves it behind.
+static const int PROGRESS_YIELD_MS = 50 ;
+
+static void yieldToEvents(int ms)
+{
+    QEventLoop loop ;
+    QTimer::singleShot(ms, &loop, &QEventLoop::quit) ;
+    loop.exec() ;
+}
 
 AProgressInfo::AProgressInfo(QWidget *parent) :
     QDialog(parent),
@@ -24,6 +38,10 @@ AProgressInfo::AProgressInfo(QWidget *parent) :
     aborted = false ;
     finished = false ;
     barView->setRange(0, complete) ;
+
+    // The log does not take the focus when the window is shown.  Qt would give it to the log first, so the screen reader would
+    // read the log's last line, and then the button.  The log takes the focus with Tab once the button has it (startProgress).
+    logView->setFocusPolicy(Qt::NoFocus) ;
 }
 
 AProgressInfo::~AProgressInfo()
@@ -62,6 +80,7 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     // Focusing before the window is shown is candidate 8 in the progress-tone ticket.
     show() ;
     buttonView->setFocus() ;
+    logView->setFocusPolicy(Qt::StrongFocus) ;
     traceFocus("progress shown: " + title) ;
 }
 
@@ -86,7 +105,7 @@ void AProgressInfo::setProgress(int value)
     int bar = qBound(0, value + progressoffset, complete) ;
     barView->setValue(bar) ;
     traceFocus(QString("progress bar %1").arg(bar)) ;
-    QCoreApplication::processEvents() ;
+    yieldToEvents(PROGRESS_YIELD_MS) ;
 }
 
 void AProgressInfo::reportProgress(int value, const QString &line)
