@@ -37,8 +37,8 @@ AProgressInfo::AProgressInfo(QWidget *parent) :
 
     // The log does not take the focus when the window is shown.  Qt gives the focus to the first focusable control when the
     // window is activated, which would be the log.  NVDA would then read the log's last line before the button's name, so the
-    // prompt would start with the end of a log line.  The log is made focusable again in startProgress, once the button has
-    // the focus, so that Tab still reaches it.  See documents/gotchas.md 6.15.
+    // prompt would start with the end of a log line.  The log is made focusable when the operation finishes (finishProgress).
+    // See documents/gotchas.md 6.15.
     logView->setFocusPolicy(Qt::NoFocus) ;
 }
 
@@ -77,9 +77,10 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     // Shown without activation, then the button focused: the order the progress tone was last heard in (aa8811a).
     // Focusing before the window is shown is candidate 8 in the progress-tone ticket.
     show() ;
+    // The button has the focus, and is the default button, for the whole operation.  The log stays out of the focus, so the
+    // screen reader does not read its text as it is written: the listener hears the progress bar and the button's name.
+    buttonView->setDefault(true) ;
     buttonView->setFocus() ;
-    // The log can be reached with Tab from here on (it was kept out of the focus when the window was shown; see the constructor)
-    logView->setFocusPolicy(Qt::StrongFocus) ;
     traceFocus("progress shown: " + title) ;
 }
 
@@ -124,6 +125,8 @@ void AProgressInfo::finishProgress(const QString &summary, const QString &button
     buttonView->setAccessibleName(buttonText) ;
     buttonView->setText(buttonText) ;
     buttonView->setFocus() ;
+    // The log can be reached with Tab once the operation has finished, so its text can be read (it was kept out of the focus during it)
+    logView->setFocusPolicy(Qt::StrongFocus) ;
     traceFocus("progress finished, waiting for OK") ;
     execFocused(this) ;
 }
