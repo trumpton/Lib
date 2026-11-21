@@ -76,6 +76,7 @@ private:
     Ui::AProgressInfo *ui ;
     int complete ;
     int progressoffset ;
+    int lastYieldBar ;   // the bar value at the last yield (see setProgress)
     bool running ;
     bool aborted ;
     bool finished ;

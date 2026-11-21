@@ -16,6 +16,9 @@ public:
     // Sets the bar, then lets the window handle events, so that the screen reader can read the new value.  See
     // documents/gotchas.md 6.14.  The operation calls this for each step.
     void setValue(int value) ;
+
+private:
+    int lastYieldValue = 0 ;   // the value at the last yield, for the step rule (see setValue)
 } ;
 
 #endif // APROGRESSDIALOG_H

@@ -21,6 +21,7 @@ AProgressInfo::AProgressInfo(QWidget *parent) :
     buttonView = ui->pushButton ;
     complete = 100 ;
     progressoffset = 0 ;
+    lastYieldBar = 0 ;
     running = false ;
     aborted = false ;
     finished = false ;
@@ -59,6 +60,7 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     // The accessible name is the title without its dash, as the appointment form names its dialog (Contact Manager Appointment)
     setAccessibleName(QString(title).replace(" - ", " ")) ;
     running = true ;
+    lastYieldBar = 0 ;
     aborted = false ;
     finished = false ;
     barView->setRange(0, complete) ;
@@ -99,7 +101,11 @@ void AProgressInfo::setProgress(int value)
     int bar = qBound(0, value + progressoffset, complete) ;
     barView->setValue(bar) ;
     traceFocus(QString("progress bar %1").arg(bar)) ;
-    yieldToEvents(PROGRESS_YIELD_MS) ;
+    // A small step is not given time: the window yields when the bar has moved by more than 1% since the last yield
+    if (progressStepIsLarge(lastYieldBar, bar, complete)) {
+        lastYieldBar = bar ;
+        yieldToEvents(PROGRESS_YIELD_MS) ;
+    }
 }
 
 void AProgressInfo::reportProgress(int value, const QString &line)
