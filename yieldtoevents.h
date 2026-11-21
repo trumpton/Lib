@@ -5,8 +5,10 @@
 // window, and the progress tone plays (documents/gotchas.md 6.14).
 const int PROGRESS_YIELD_MS = 4 ;
 
-// The time a progress window is given after its button takes the focus, before the operation writes to it (documents/gotchas.md 6.16).
-const int PROGRESS_SETTLE_MS = 200 ;
+// After its button is given the focus, a progress window waits in steps of PROGRESS_FOCUS_STEP_MS until the focus is on the button, and
+// gives up after PROGRESS_FOCUS_TRIES steps, so the operation is never held up for long (documents/gotchas.md 6.16).
+const int PROGRESS_FOCUS_STEP_MS = 50 ;
+const int PROGRESS_FOCUS_TRIES = 20 ;
 
 // A progress update yields when the bar has moved by at least this percentage of its total since the last yield.  A smaller
 // step is not given time, so a long operation with many small steps is not slowed by a wait for each one.

@@ -8,6 +8,7 @@
 #include "yieldtoevents.h"
 #include "supportfunctions.h"
 
+#include <QApplication>
 #include <QCoreApplication>
 #include <QtGlobal>
 
@@ -75,9 +76,18 @@ void AProgressInfo::startProgress(const QString &task, const QString &runningTex
     // screen reader does not read its text as it is written: the listener hears the progress bar and the button's name.
     buttonView->setDefault(true) ;
     buttonView->setFocus() ;
-    // The window and the focus settle before any text is written, so the screen reader has the button when the text arrives
-    yieldToEvents(PROGRESS_SETTLE_MS) ;
+    // The focus can reach the button a moment after the window is made active.  Qt reports the focus only once the window is
+    // active, so the wait ends when the window is active and the button has the focus, or after the last step.  NVDA's own focus is
+    // not visible to Qt, so this does not confirm what the screen reader has.
+    for (int tries = 0 ; tries < PROGRESS_FOCUS_TRIES && !buttonHasFocus() ; tries++)
+        yieldToEvents(PROGRESS_FOCUS_STEP_MS) ;
     traceFocus("progress shown: " + title) ;
+}
+
+// True when this window is active and its button has the focus
+bool AProgressInfo::buttonHasFocus() const
+{
+    return isActiveWindow() && QApplication::focusWidget() == buttonView ;
 }
 
 void AProgressInfo::setCompleteValue(int value)
