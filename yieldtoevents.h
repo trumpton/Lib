@@ -8,7 +8,7 @@
 const int PROGRESS_YIELD_MS = 10 ;
 
 // A progress window yields after a progress update only when this much time has passed since its last yield (see yieldIfStepDue).
-const int PROGRESS_STEP_MS = 250 ;
+const int PROGRESS_STEP_MS = 100 ;
 
 // The time a progress window is given after its button takes the focus, before the operation writes to it (documents/gotchas.md 6.16).
 const int PROGRESS_SETTLE_MS = 250 ;
