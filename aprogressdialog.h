@@ -2,6 +2,7 @@
 #define APROGRESSDIALOG_H
 
 #include <QProgressDialog>
+#include <QElapsedTimer>
 
 // AProgressDialog: a QProgressDialog, for the accessibility of ContactManager, EasyNotepad, ParseWeb and Lib.  Every change to
 // how progress dialogs are shown is made here.
@@ -18,7 +19,7 @@ public:
     void setValue(int value) ;
 
 private:
-    int lastYieldValue = 0 ;   // the value at the last yield, for the step rule (see setValue)
+    QElapsedTimer yieldClock ;   // the time since the last yield (see setValue)
 } ;
 
 #endif // APROGRESSDIALOG_H

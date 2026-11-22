@@ -2,6 +2,7 @@
 #define APROGRESSINFO_H
 
 #include <QDialog>
+#include <QElapsedTimer>
 #include <QString>
 
 class ATextEdit ;
@@ -76,7 +77,7 @@ private:
     Ui::AProgressInfo *ui ;
     int complete ;
     int progressoffset ;
-    int lastYieldBar ;   // the bar value at the last yield (see setProgress)
+    QElapsedTimer yieldClock ;   // the time since the last yield (see setProgress)
     bool running ;
     bool aborted ;
     bool finished ;
