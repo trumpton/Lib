@@ -4,7 +4,7 @@
 #include <QEventLoop>
 #include <QTimer>
 
-// TEST: the yield also sends a value change for the widget (the progress bar), and the event loop is not run
+// TEST: the yield also sends a value change for the widget (the progress bar), then runs the event loop
 void yieldToEvents(int ms, QWidget *widget, int value)
 {
     if (widget) {
@@ -13,6 +13,5 @@ void yieldToEvents(int ms, QWidget *widget, int value)
     }
     QEventLoop loop ;
     QTimer::singleShot(ms, &loop, &QEventLoop::quit) ;
-    // TEST: temporarily disabled
-    // loop.exec() ;
+    loop.exec() ;
 }
