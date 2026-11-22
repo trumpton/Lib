@@ -14,5 +14,5 @@ void AProgressDialog::showProgress()
 void AProgressDialog::setValue(int value)
 {
     QProgressDialog::setValue(value) ;
-    yieldIfStepDue(yieldClock) ;
+    yieldIfStepDue(yieldClock, this, value) ;
 }

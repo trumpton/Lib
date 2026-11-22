@@ -99,7 +99,7 @@ void AProgressInfo::setProgress(int value)
     int bar = qBound(0, value + progressoffset, complete) ;
     barView->setValue(bar) ;
     traceFocus(QString("progress bar %1").arg(bar)) ;
-    yieldIfStepDue(yieldClock) ;
+    yieldIfStepDue(yieldClock, barView, bar) ;
 }
 
 void AProgressInfo::reportProgress(int value, const QString &line)
