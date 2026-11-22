@@ -30,7 +30,6 @@ public:
     void startProgress(const QString &task, const QString &runningText = QString("Abort")) ;
 
     // The bar's value for 100%.  It is 100 unless set here.
-    bool buttonHasFocus() const ;
     void setCompleteValue(int value) ;
     int completeValue() const ;
 
