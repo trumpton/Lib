@@ -202,20 +202,30 @@ void showWindow(QWidget *w)
 
     accessibleTrace("show window " + nameOfWidget(w) + " " + focusState()) ;
     w->show() ;
-    w->raise() ;
-    w->activateWindow() ;
-    QApplication::setActiveWindow(w) ;
 
-    QWidget *target = w->focusWidget() ;
-    if (!target || !w->isAncestorOf(target)) {
-        // No focus control yet: the first one that can take the focus
-        target = w ;
-        for (QWidget *c : w->findChildren<QWidget *>()) {
-            if (c->isVisible() && c->isEnabled() && c->focusPolicy()!=Qt::NoFocus) { target = c ; break ; }
+    // The window is made active once the event loop has run: a window opened from a menu is shown while the menu is still
+    // closing, and the menu gives the focus back to the window it came from when it closes.  Made active at once, the focus
+    // would go back to the main window.
+    QPointer<QWidget> window(w) ;
+    QTimer::singleShot(0, w, [window]() {
+        if (window.isNull()) return ;
+        QWidget *win = window.data() ;
+        win->raise() ;
+        win->activateWindow() ;
+        QApplication::setActiveWindow(win) ;
+
+        QWidget *target = win->focusWidget() ;
+        if (!target || !win->isAncestorOf(target)) {
+            // No focus control yet: the first one that can take the focus
+            target = win ;
+            for (QWidget *c : win->findChildren<QWidget *>()) {
+                if (c->isVisible() && c->isEnabled() && c->focusPolicy()!=Qt::NoFocus) { target = c ; break ; }
+            }
         }
-    }
-    target->setFocus(Qt::ActiveWindowFocusReason) ;
-    announceFocus(target) ;
+        target->setFocus(Qt::ActiveWindowFocusReason) ;
+        announceFocus(target) ;
+        accessibleTrace("window active: " + nameOfWidget(win) + " " + focusState()) ;
+    }) ;
 }
 
 int execFocused(QDialog *dlg)
