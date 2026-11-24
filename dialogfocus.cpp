@@ -192,6 +192,32 @@ void showFocused(QDialog *dlg)
     activateDialog(dlg) ;
 }
 
+void showWindow(QWidget *w)
+{
+    installDialogFocusGuard() ;
+
+    // A window with a Qt parent belongs to that window: Alt+Tab does not give it, and the parent brings it back.  It is made a
+    // window of its own, as a top-level window, before it is shown.
+    if (w->parentWidget() || w->windowType()!=Qt::Window) w->setParent(nullptr, Qt::Window) ;
+
+    accessibleTrace("show window " + nameOfWidget(w) + " " + focusState()) ;
+    w->show() ;
+    w->raise() ;
+    w->activateWindow() ;
+    QApplication::setActiveWindow(w) ;
+
+    QWidget *target = w->focusWidget() ;
+    if (!target || !w->isAncestorOf(target)) {
+        // No focus control yet: the first one that can take the focus
+        target = w ;
+        for (QWidget *c : w->findChildren<QWidget *>()) {
+            if (c->isVisible() && c->isEnabled() && c->focusPolicy()!=Qt::NoFocus) { target = c ; break ; }
+        }
+    }
+    target->setFocus(Qt::ActiveWindowFocusReason) ;
+    announceFocus(target) ;
+}
+
 int execFocused(QDialog *dlg)
 {
     // QDialog::exec, not exec, so that a dialog which overrides exec() (ItemSelect) does not come back here.

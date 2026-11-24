@@ -4,6 +4,7 @@
 #include <QString>
 
 class QDialog ;
+class QWidget ;
 
 // Dialogs and the screen reader.  A dialog must be the window that the screen reader follows, with its own control
 // focused, and it must stay in front of the program's main window.
@@ -16,6 +17,12 @@ void installDialogFocusGuard() ;
 
 // Runs a modal dialog, in place of exec().  The caller still deletes the dialog if it created it with new.
 int execFocused(QDialog *dlg) ;
+
+// Shows a window that is not modal, and the user works in alongside the program (the log, the screen reader text).  It is made a
+// window of its own, with no Qt parent, so that Alt+Tab and the taskbar give it, and the program's main window does not hold it
+// back.  It is made the active window, with its first control focused, so it can be read and closed from the keyboard.  Only the
+// windows that call it are changed; a modal dialog uses execFocused, and a progress window uses showFocused.
+void showWindow(QWidget *w) ;
 
 // Shows a window that stays open while the user works elsewhere, or while a long operation runs (a progress window), as its own
 // window, and makes it the active window with its focus control focused, as execFocused does.  The screen reader follows the
