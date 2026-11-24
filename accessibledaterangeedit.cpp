@@ -140,19 +140,18 @@ void AccessibleDateRangeEdit::keyPressEvent(QKeyEvent *event)
             // The field is the letter at or before the cursor (the loop must move along, or it never ends)
             int field = pos ;
             while (field>0 && !ch.isLetter()) { field-- ; ch=format.at(field) ; }
-            if (ch == 'd') newtime = datetime.addDays(-1) ;
-            else if (ch == 'M') newtime = datetime.addMonths(-1) ;
-            else if (ch == 'y') newtime = datetime.addYears(-1) ;
-            else if (ch == 'h') newtime = datetime.addSecs(-3600) ;
-            else if (ch == 'm') newtime = datetime.addSecs(-60) ;
+            if (ch == 'd') newtime = datetime.addDays(1) ;
+            else if (ch == 'M') newtime = datetime.addMonths(1) ;
+            else if (ch == 'y') newtime = datetime.addYears(1) ;
+            else if (ch == 'h') newtime = datetime.addSecs(3600) ;
+            else if (ch == 'm') newtime = datetime.addSecs(60) ;
             else if (ch == 'X') {
                 // TODO: Round to nearest 15 minutes
-                if (duration < 120) newduration-=15 ;
-                else if (duration<300) newduration-=30 ;
-                else if (duration<1500) newduration-=60 ;
-                else newduration-=1440 ;
-                if (newduration<0) newduration=0 ;
-            }
+                if (duration < 120) newduration+=15 ;
+                else if (duration<300) newduration+=30 ;
+                else if (duration<1500) newduration+=60 ;
+                else newduration+=1440 ;
+                            }
 
         }
         monthdelta=-1 ;
@@ -166,17 +165,18 @@ void AccessibleDateRangeEdit::keyPressEvent(QKeyEvent *event)
             // The field is the letter at or before the cursor (the loop must move along, or it never ends)
             int field = newpos ;
             while (field>0 && !ch.isLetter()) { field-- ; ch=format.at(field) ; }
-            if (ch == 'd') newtime = datetime.addDays(1) ;
-            else if (ch == 'M') newtime = datetime.addMonths(1) ;
-            else if (ch == 'y') newtime = datetime.addYears(1) ;
-            else if (ch == 'h') newtime = datetime.addSecs(3600) ;
-            else if (ch == 'm') newtime = datetime.addSecs(60) ;
+            if (ch == 'd') newtime = datetime.addDays(-1) ;
+            else if (ch == 'M') newtime = datetime.addMonths(-1) ;
+            else if (ch == 'y') newtime = datetime.addYears(-1) ;
+            else if (ch == 'h') newtime = datetime.addSecs(-3600) ;
+            else if (ch == 'm') newtime = datetime.addSecs(-60) ;
             else if (ch == 'X') {
                 // TODO: Round to nearest 15 minutes
-                if (duration < 120) newduration+=15 ;
-                else if (duration<300) newduration+=30 ;
-                else if (duration<1440) newduration+=60 ;
-                else newduration+=1440 ;
+                if (duration < 120) newduration-=15 ;
+                else if (duration<300) newduration-=30 ;
+                else if (duration<1440) newduration-=60 ;
+                else newduration-=1440 ;
+                if (newduration<0) newduration=0 ;
             }
         }
         monthdelta=-1 ;
