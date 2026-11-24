@@ -157,8 +157,13 @@ static void activateDialog(QDialog *dlg)
 static void keepFocusInModalDialog(QWidget *old, QWidget *now)
 {
     accessibleTrace("focusChanged " + nameOfWidget(old) + " -> " + nameOfWidget(now) + " " + focusState()) ;
-    QWidget *modal = QApplication::activeModalWidget() ;
-    if (!modal || !now) return ;
+
+    // Only a modal dialog is guarded.  The main window is window-modal (mainwindow.ui), so Qt reports it as the modal widget
+    // while no dialog is open: without this test, focus going to the Log or the Screen Reader Text window (or to another program)
+    // was taken back to the main window.  A dialog that is not modal is not guarded either.
+    QDialog *dialog = qobject_cast<QDialog *>(QApplication::activeModalWidget()) ;
+    if (!dialog || dialog->windowModality()==Qt::NonModal || !now) return ;
+    QWidget *modal = dialog ;
     if (now==modal || modal->isAncestorOf(now)) return ;
     if (popupInUse(now)) { accessibleTrace("focus went to the popup " + nameOfWidget(now) + ": left there") ; return ; }
     accessibleTrace("focus went to " + nameOfWidget(now) + " outside the dialog " + nameOfWidget(modal) + " " + focusState()) ;
