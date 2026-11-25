@@ -205,7 +205,7 @@ bool backupFile(QString& path, QString& filename)
     QString dstdir = path + "deleted" ;
     QString dst = dstdir + "/" + filename ;
 
-    if (!QDir(dstdir).exists()) QDir().mkdir(dstdir) ;
+    if (!QDir(dstdir).exists()) QDir().mkpath(dstdir) ;
     QFile::remove(dst) ;
     QFile::rename(src, dst) ;
 
