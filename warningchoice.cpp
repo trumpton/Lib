@@ -62,7 +62,8 @@ int WarningChoice::addChoice(QString label, QChar key, QString description)
     int square = fontMetrics().height() * 2 + 8 ;
     APushButton *button = new APushButton(QString(letter).toUpper(), this) ;
     button->setFixedSize(square, square) ;
-    button->setAccessibleName(label) ;
+    // The letter first, as the button shows it: "A: Change just this one"
+    button->setAccessibleName(QString(letter.toUpper()) + ": " + label) ;
     connect(button, &APushButton::clicked, this, [this, index]() { chooseIndex(index) ; }) ;
 
     ALabel *details = new ALabel(label + "\n" + description, this) ;
@@ -105,6 +106,13 @@ void WarningChoice::chooseIndex(int index)
 void WarningChoice::showEvent(QShowEvent *event)
 {
     QDialog::showEvent(event) ;
+
+    // The dialog takes its width first, so that the question is measured at the width it is shown at.  Measured before that,
+    // the question was taller than its box at the final width, and the first choice covered its end.
+    layout->activate() ;
+    resize(qMax(sizeHint().width(), minimumWidth()), height()) ;
+    layout->activate() ;
+
     QTextDocument *document = textWarning->document() ;
     document->setTextWidth(textWarning->viewport()->width()) ;
     textWarning->setFixedHeight(qCeil(document->size().height()) + 2*textWarning->frameWidth() + 8) ;
@@ -112,7 +120,9 @@ void WarningChoice::showEvent(QShowEvent *event)
     // The dialog is as tall as its question and choices, and no taller
     layout->activate() ;
     resize(qMax(sizeHint().width(), minimumWidth()), sizeHint().height()) ;
-    textWarning->setFocus() ;
+
+    // The first choice (A) has the focus when the dialog opens
+    if (!buttons.isEmpty()) buttons.first()->setFocus() ;
 }
 
 // Letters, Enter and Escape choose, whichever has the focus.  Tab and the arrow keys are left to the text box.
