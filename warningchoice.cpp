@@ -113,9 +113,14 @@ void WarningChoice::showEvent(QShowEvent *event)
     resize(qMax(sizeHint().width(), minimumWidth()), height()) ;
     layout->activate() ;
 
-    QTextDocument *document = textWarning->document() ;
-    document->setTextWidth(textWarning->viewport()->width()) ;
-    textWarning->setFixedHeight(qCeil(document->size().height()) + 2*textWarning->frameWidth() + 8) ;
+    // The height is measured on a plain text document with the same font, margin and width.  The document of a plain
+    // text box reports its size in lines, not pixels, so measuring that gave a box about two pixels tall.
+    QTextDocument measure ;
+    measure.setDefaultFont(textWarning->document()->defaultFont()) ;
+    measure.setDocumentMargin(textWarning->document()->documentMargin()) ;
+    measure.setPlainText(textWarning->toPlainText()) ;
+    measure.setTextWidth(textWarning->viewport()->width()) ;
+    textWarning->setFixedHeight(qCeil(measure.size().height()) + 2*textWarning->frameWidth() + 8) ;
 
     // The dialog is as tall as its question and choices, and no taller
     layout->activate() ;
