@@ -7,6 +7,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QDialog>
+#include <QMainWindow>
 #include <QElapsedTimer>
 #include <QEventLoop>
 #include <QFile>
@@ -233,6 +234,28 @@ void showWindow(QWidget *w)
     }) ;
 }
 
+// Gives the focus back to a window of this program: the one that had it when a dialog opened.  The window is made the foreground
+// window too (on Windows, as forceForeground does it).
+static void returnFocus(QWidget *w)
+{
+    accessibleTrace("return focus to " + nameOfWidget(w) + " " + focusState()) ;
+#ifdef Q_OS_WIN
+    forceForeground(w) ;
+#endif
+    w->activateWindow() ;
+    QApplication::setActiveWindow(w) ;
+    w->raise() ;
+}
+
+// The program's main window: its one visible QMainWindow
+static QWidget *mainWindowOfProgram()
+{
+    for (QWidget *w : QApplication::topLevelWidgets()) {
+        if (qobject_cast<QMainWindow *>(w) && w->isVisible()) return w ;
+    }
+    return nullptr ;
+}
+
 int execFocused(QDialog *dlg)
 {
     // QDialog::exec, not exec, so that a dialog which overrides exec() (ItemSelect) does not come back here.
@@ -261,6 +284,15 @@ int execFocused(QDialog *dlg)
 
     int result = dlg->QDialog::exec() ;
     accessibleTrace("closed " + nameOfWidget(dlg) + " " + focusState()) ;
+
+    // When the dialog closes, the system gives the focus to the next window in front, which is another program if the user
+    // switched to it while the dialog was open.  So the focus goes back in the stack of the program's dialogs: to the dialog
+    // that is still open below this one (a nested dialog), else to the program's main window.
+    QWidget *main = mainWindowOfProgram() ;
+    QWidget *modal = QApplication::activeModalWidget() ;
+    QDialog *below = (modal && modal!=main && modal!=dlg) ? qobject_cast<QDialog *>(modal) : nullptr ;
+    if (below) activateDialog(below) ;
+    else if (main) returnFocus(main) ;
     return result ;
 }
 
