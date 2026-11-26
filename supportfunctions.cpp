@@ -21,6 +21,7 @@
 #include "adialogbuttonbox.h"
 #include <QVBoxLayout>
 #include "alineedit.h"
+#include "asearchlineedit.h"
 
 #include "warningyesno.h"
 #include "warningok.h"
@@ -579,8 +580,10 @@ bool errorOkDialog(QWidget *parent, QString title, QString message)
     return warningOkDialog(parent, title, message, true) ;
 }
 
-QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok,
-                    QString accessibleName, QString accessibleDescription)
+// The text entry dialog behind inputDialog and searchInputDialog.  searchEntry is true for the Find dialogs: their text is
+// selected when the dialog opens (ASearchLineEdit), instead of the cursor being at its end with nothing selected (ALineEdit).
+static QString textEntryDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok,
+                               QString accessibleName, QString accessibleDescription, bool searchEntry)
 {
     play(Query) ;
     QDialog dialog(parent) ;
@@ -590,13 +593,27 @@ QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::E
     layout->addWidget(label) ;
     // The prompt is the entry's name, so the screen reader reads it with the entry, not on its own
     hideLabelFromSpeech(label) ;
-    ALineEdit *edit = new ALineEdit(&dialog) ;
-    edit->setEchoMode(echo) ;
-    edit->setAccessibleName(fieldName(accessibleName.isEmpty() ? prompt : accessibleName)) ;
-    if (!accessibleDescription.isEmpty()) edit->setAccessibleDescription(accessibleDescription) ;
-    label->setBuddy(edit) ;
-    // The text is shown with the cursor at the end and nothing selected, so a key typed adds to it
-    edit->preloadText(defaulttext) ;
+    QLineEdit *edit ;
+    if (searchEntry) {
+        ASearchLineEdit *search = new ASearchLineEdit(&dialog) ;
+        search->setEchoMode(echo) ;
+        search->setAccessibleName(fieldName(accessibleName.isEmpty() ? prompt : accessibleName)) ;
+        if (!accessibleDescription.isEmpty()) search->setAccessibleDescription(accessibleDescription) ;
+        label->setBuddy(search) ;
+        // The last search is shown selected, with the cursor at its end, so that typing replaces it
+        search->setText(defaulttext) ;
+        search->setSelection(0, defaulttext.length()) ;
+        edit = search ;
+    } else {
+        ALineEdit *line = new ALineEdit(&dialog) ;
+        line->setEchoMode(echo) ;
+        line->setAccessibleName(fieldName(accessibleName.isEmpty() ? prompt : accessibleName)) ;
+        if (!accessibleDescription.isEmpty()) line->setAccessibleDescription(accessibleDescription) ;
+        label->setBuddy(line) ;
+        // The text is shown with the cursor at the end and nothing selected, so a key typed adds to it
+        line->preloadText(defaulttext) ;
+        edit = line ;
+    }
     layout->addWidget(edit) ;
     ADialogButtonBox *buttons = new ADialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog) ;
     layout->addWidget(buttons) ;
@@ -606,6 +623,17 @@ QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::E
     bool accepted = execFocused(&dialog)==QDialog::Accepted ;
     if (ok) *ok = accepted ;
     return accepted ? edit->text() : QString() ;
+}
+
+QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok,
+                    QString accessibleName, QString accessibleDescription)
+{
+    return textEntryDialog(parent, title, prompt, echo, defaulttext, ok, accessibleName, accessibleDescription, false) ;
+}
+
+QString searchInputDialog(QWidget *parent, QString title, QString prompt, QString defaulttext, bool *ok)
+{
+    return textEntryDialog(parent, title, prompt, QLineEdit::Normal, defaulttext, ok, QString(), QString(), true) ;
 }
 
 void criticalDialog(QWidget *parent, QString title, QString message)

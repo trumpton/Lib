@@ -77,6 +77,9 @@ bool deliberateYesNoDialog(QWidget *parent, QString title, QString message, QStr
 // typing does not replace a selection.  accessibleName is the prompt when it is empty.
 QString inputDialog(QWidget *parent, QString title, QString prompt, QLineEdit::EchoMode echo, QString defaulttext, bool *ok,
                     QString accessibleName = QString(), QString accessibleDescription = QString()) ;
+// The text box of a Find or Global Find: the same dialog, but defaulttext (the last search) is selected when it opens, with the
+// cursor at its end, and typing replaces it (ASearchLineEdit).  The name and description are those of inputDialog.
+QString searchInputDialog(QWidget *parent, QString title, QString prompt, QString defaulttext, bool *ok) ;
 
 // Manage logging
 QString& getLog() ;
