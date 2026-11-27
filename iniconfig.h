@@ -11,7 +11,9 @@
 // Reads an ini file.  Every value is expanded once, when the file is loaded.
 //
 // Variables are written $(NAME).  The built-in names HOME, INI and APPDIR are parsed first, and cannot be overridden in
-// the [var] section.  The [var] entries are then expanded, and every other value is expanded.  Each expansion goes through
+// the [var] section.  LIBREOFFICE is also set automatically (the LibreOffice install folder, found on Windows from the
+// registry), but a [var] entry called LIBREOFFICE overrides it.  The [var] entries are then expanded, and every other
+// value is expanded.  Each expansion goes through
 // at most four passes (IniConfig::PASSES), or until nothing changes.  Anything still unresolved after the fourth pass is
 // kept as it was at that point.
 class IniConfig

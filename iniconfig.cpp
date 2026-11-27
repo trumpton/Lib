@@ -7,6 +7,30 @@
 // The built-in variable names.  They are parsed first, and a [var] entry with one of these names is ignored.
 static const QStringList builtinNames = { "HOME", "INI", "APPDIR" } ;
 
+// The folder of the LibreOffice install, the one with program\python.exe in it, with forward slashes and no slash at the
+// end (for example C:/Program Files (x86)/LibreOffice 5).  On Windows it comes from the UNO InstallPath registry key, which
+// the 32-bit install writes under WOW6432Node, so both places are looked at.  On Linux it is /usr/lib/libreoffice when that
+// is installed.  Empty when none is found.  A [var] entry called LIBREOFFICE overrides it.
+static QString libreOfficeFolder()
+{
+    QString folder ;
+#ifdef Q_OS_WIN
+    const QStringList keys = { "HKEY_LOCAL_MACHINE\\SOFTWARE\\LibreOffice\\UNO\\InstallPath",
+                               "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\LibreOffice\\UNO\\InstallPath" } ;
+    for (const QString &key : keys) {
+        QSettings reg(key, QSettings::NativeFormat) ;
+        folder = reg.value(".").toString() ;
+        if (!folder.isEmpty()) break ;
+    }
+    folder = folder.replace("\\", "/") ;
+    while (folder.endsWith("/")) folder.chop(1) ;
+    if (folder.endsWith("/program", Qt::CaseInsensitive)) folder.chop(QString("/program").length()) ;
+#else
+    if (QDir("/usr/lib/libreoffice/program").exists()) folder = "/usr/lib/libreoffice" ;
+#endif
+    return folder ;
+}
+
 // Replaces each $(NAME) in the text with its value, for every name in the map, once
 static QString replaceVariables(QString text, const QMap<QString,QString> &vars)
 {
@@ -67,6 +91,8 @@ void IniConfig::parseOnLoad()
     builtin["HOME"] = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) ;
     builtin["INI"] = path ;
     builtin["APPDIR"] = QApplication::applicationDirPath() ;
+    // Automatic, but a [var] entry with this name overrides it (see below, where [var] entries replace these)
+    builtin["LIBREOFFICE"] = libreOfficeFolder() ;
 
     // The [var] entries, without the built-in names
     QMap<QString,QString> raw ;
