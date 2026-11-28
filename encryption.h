@@ -68,6 +68,11 @@ private:
     bool saveKey() ;
 
 public:
+    // The login password kept in the settings store of a domain and application.  It is stored obfuscated (not encrypted).
+    // Reading gives false when none is stored.
+    static bool readStoredPassword(const QString &domain, const QString &application, QString &password) ;
+    static void writeStoredPassword(const QString &domain, const QString &application, const QString &password) ;
+
     explicit Encryption(QString domain, QString application, QWidget *parent = 0);
     ~Encryption();
 

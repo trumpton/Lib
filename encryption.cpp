@@ -428,36 +428,47 @@ void Encryption::login()
 }
 
 
+// The login password is kept in the settings store as its bytes, obfuscated (not encrypted), under the key D
+bool Encryption::readStoredPassword(const QString &domain, const QString &application, QString &password)
+{
+    QSettings ini(domain, application) ;
+    QByteArray ba = ini.value(QString("D"), QByteArray()).toByteArray() ;
+    QByteArray bo ;
+    for (int i=0, j=5; i<ba.length() && i<64; j+=5,i++) {
+        int nc = (ba.at(i) - (i+1)*3) ;
+        if (nc<0) nc+=256 ;
+        nc = (nc ^ j)&255 ;
+        bo.append((unsigned char)nc) ;
+    }
+    password = QString::fromUtf8(bo) ;
+    return !password.isEmpty() ;
+}
+
+void Encryption::writeStoredPassword(const QString &domain, const QString &application, const QString &password)
+{
+    QSettings ini(domain, application) ;
+    QByteArray ba = password.toUtf8() ;
+    QByteArray bo ;
+    for (int i=0, j=5; i<ba.length() && i<64; j+=5,i++) {
+        int nc = ((ba.at(i) ^ j)&255) + (i+1) * 3 ;
+        if (nc>255) nc-= 256 ;
+        bo.append((unsigned char)nc) ;
+    }
+    ini.setValue(QString("D"), bo) ;
+}
+
 bool Encryption::passwordStore(Encryption::PasswordAction action, QString& password)
 {
     QSettings ini(sDomain, sApplication) ;
 
     switch (action) {
-    case Encryption::Write: {
-            QByteArray ba = password.toUtf8() ;
-            QByteArray bo ;
-            for (int i=0, j=5; i<ba.length() && i<64; j+=5,i++) {
-                int nc = ((ba.at(i) ^ j)&255) + (i+1) * 3 ;
-                if (nc>255) nc-= 256 ;
-                bo.append((unsigned char)nc) ;
-            }
-            ini.setValue(QString("D"), bo) ;
-        }
+    case Encryption::Write:
+        writeStoredPassword(sDomain, sApplication, password) ;
         return true ;
         break ;
 
-    case Encryption::Read: {
-            QByteArray ba = ini.value(QString("D"), QByteArray()).toByteArray() ; ;
-            QByteArray bo ;
-            for (int i=0, j=5; i<ba.length() && i<64; j+=5,i++) {
-                int nc = (ba.at(i) - (i+1)*3) ;
-                if (nc<0) nc+=256 ;
-                nc = (nc ^ j)&255 ;
-                bo.append((unsigned char)nc) ;
-            }
-            password = QString::fromUtf8(bo) ;
-        }
-        return !password.isEmpty() ;
+    case Encryption::Read:
+        return readStoredPassword(sDomain, sApplication, password) ;
         break ;
 
     case Encryption::Delete:
